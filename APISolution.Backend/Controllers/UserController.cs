@@ -1,5 +1,6 @@
-﻿using APISoluton.Application.Conmon;
-using APISoluton.Application.IService;
+﻿
+using APISoluton.Application.Interface.User.Commands;
+using APISoluton.Application.Interface.User.Queries;
 using APISoluton.Application.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

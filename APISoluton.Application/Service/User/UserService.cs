@@ -1,19 +1,14 @@
 ﻿using APISolution.Database.DatabaseContext;
 using APISolution.Database.Entity;
-using APISoluton.Application.Conmon;
-using APISoluton.Application.IService;
+using APISoluton.Application.Interface.User.Commands;
+using APISoluton.Application.Interface.User.Queries;
 using APISoluton.Application.ViewModel;
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace APISoluton.Application.Service
+
+namespace APISoluton.Application.Service.User
 {
-    public class UserService : IUser ,IUsers
+    public class UserService : IUser, IUsers
     {
         private readonly IMapper _mapper;
         private readonly DdConnect _db;
@@ -25,9 +20,9 @@ namespace APISoluton.Application.Service
 
         public async Task<string> CreatUser(UserVM userVM)
         {
-            var map = _mapper.Map<User>(userVM);
-          await  _db.Users.AddAsync(map);
-          await  _db.SaveChangesAsync();
+            var map = _mapper.Map<APISolution.Database.Entity.User>(userVM);
+            await _db.Users.AddAsync(map);
+            await _db.SaveChangesAsync();
             return "thanh cong";
         }
 
@@ -61,5 +56,5 @@ namespace APISoluton.Application.Service
         }
     }
 
-   
+
 }

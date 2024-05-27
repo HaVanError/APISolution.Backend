@@ -1,10 +1,11 @@
-
 using APISolution.Database.DatabaseContext;
-using APISoluton.Application.Conmon;
-using APISoluton.Application.IService;
+using APISoluton.Application.Interface.Role.Commands;
+using APISoluton.Application.Interface.Role.Queries;
+using APISoluton.Application.Interface.User.Commands;
+using APISoluton.Application.Interface.User.Queries;
 using APISoluton.Application.MappeerConfiguration;
-using APISoluton.Application.Service;
-
+using APISoluton.Application.Service.Role;
+using APISoluton.Application.Service.User;
 using Microsoft.EntityFrameworkCore;
 
 

@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APISoluton.Application.IService
+namespace APISoluton.Application.Interface.Role.Queries
 {
-    public interface IRole
+    public interface IRoles
     {
-        string Add(RoleVM vn);
-
+        List<RoleVM> GetAllRoles();
+        RoleVM GetRoleByName(string name);
     }
 }

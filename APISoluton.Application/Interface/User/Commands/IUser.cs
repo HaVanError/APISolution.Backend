@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APISoluton.Application.Conmon
+namespace APISoluton.Application.Interface.User.Commands
 {
-    public interface IUsers 
+    public interface IUser
     {
-        Task<List<UserVMShowAll>> GetListUsers();
-       // Task<UserVM> GetUserById(int id);
+        Task<string> CreatUser(UserVM userVM);
     }
 }

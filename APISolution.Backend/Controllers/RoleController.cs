@@ -1,5 +1,5 @@
-﻿using APISoluton.Application.Conmon;
-using APISoluton.Application.IService;
+﻿using APISoluton.Application.Interface.Role.Commands;
+using APISoluton.Application.Interface.Role.Queries;
 using APISoluton.Application.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +26,16 @@ namespace APISolution.Backend.Controllers
         public IActionResult Get()
         {
             return Ok(_roles.GetAllRoles());
+        }
+        [HttpPut("{id:int}")]
+        public IActionResult UpdateRole(int id , RoleVM model)
+        {
+            return Ok(_role.Update(model,id));
+        }
+        [HttpDelete]
+        public IActionResult DeleteRole(int id)
+        {
+            return Ok(_role.Delete(id));
         }
     }
 }

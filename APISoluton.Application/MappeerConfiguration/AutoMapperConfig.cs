@@ -13,8 +13,8 @@ namespace APISoluton.Application.MappeerConfiguration
     {
         public AutoMapperConfig()
         {
-            CreateMap<User, UserVM>();
-            CreateMap<UserVM, User>();
+            CreateMap<APISolution.Database.Entity.User, UserVM>();
+            CreateMap<UserVM, APISolution.Database.Entity.User>();
             CreateMap<Role, RoleVM>();
             CreateMap<RoleVM, Role>();
         }
