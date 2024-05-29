@@ -14,11 +14,12 @@ namespace APISolution.Database.DatabaseContext
         public DdConnect(DbContextOptions<DdConnect> options) : base(options) { }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-
+        public DbSet<ResfreshToken> ResfreshTokens { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new ConfigurationUser());
             modelBuilder.ApplyConfiguration(new ConfigurationRole());
+            modelBuilder.ApplyConfiguration(new ConfigurationResfreshToken());
 
         }
     }

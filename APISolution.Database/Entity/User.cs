@@ -15,7 +15,8 @@ namespace APISolution.Database.Entity
         public string? Address {  get; set; }
         public string? City { get; set; }
         public int IdRole {  get; set; }
-        public virtual Role Role { get; set; } =default!;
-   
+        public  Role Role { get; set; } =default!;
+        public ResfreshToken ResfreshToken { get; set; } = default!;
+
     }
 }

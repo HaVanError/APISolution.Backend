@@ -23,6 +23,7 @@ namespace APISolution.Backend.Controllers
             return Ok (_role.Add(vn));
         }
         [HttpGet]
+        
         public IActionResult Get()
         {
             return Ok(_roles.GetAllRoles());

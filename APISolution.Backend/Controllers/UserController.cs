@@ -1,7 +1,9 @@
 ﻿
+using APISolution.Database.Entity;
 using APISoluton.Application.Interface.User.Commands;
 using APISoluton.Application.Interface.User.Queries;
 using APISoluton.Application.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +26,8 @@ namespace APISolution.Backend.Controllers
             return Ok( await _user.CreatUser(user));
         }
         [HttpGet]
+        [Authorize(Roles ="Admin")]
+       
         public async Task<IActionResult> GetUser()
         {
             return Ok(await _users.GetListUsers());

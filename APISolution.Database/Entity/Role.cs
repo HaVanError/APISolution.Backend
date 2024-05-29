@@ -11,6 +11,6 @@ namespace APISolution.Database.Entity
         public int idRole {  get; set; }
         public string NameRole {  get; set; }
         public string MoTa {  get; set; }   
-        public virtual User User { get; set; } = default!;
+        public  User User { get; set; } = default!;
     }
 }
