@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.WebSockets;
 using System.Text;
 
 namespace APISolution.Backend.Controllers
@@ -29,20 +30,10 @@ namespace APISolution.Backend.Controllers
         [AllowAnonymous]
         public IActionResult Authentication(LoginVM model)
         {
-            var kiemtra =_login.Authentication(model);
-         
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                //Expires = kiemtra.RefreshToken.,
-                Secure = true,
-                IsEssential = true
-
-            };
-            Response.Cookies.Append("refreshToken", kiemtra.RefreshToken, cookieOptions);
-           
-            return Ok(kiemtra);
-            
+            var kiemTra =_login.Authentication(model);
+            var setCookie =  SetOptionCookies();
+            Response.Cookies.Append("refreshToken", kiemTra.RefreshToken,setCookie);
+            return Ok(kiemTra);
         }
         [HttpPost("refresh")]
         public IActionResult Refreshtoken( )
@@ -53,22 +44,43 @@ namespace APISolution.Backend.Controllers
             {
                 return Unauthorized("Invalid Refresh Token.");
             }
-          
+            var reFreshToken = _login.RefreshTokens(refreshTokenCookie);
+            var setCookie = SetOptionCookies();
+            Response.Cookies.Append("refreshToken", refreshTokenCookie, setCookie);
 
-            //  var res = GenerateAccessTokenFromRefreshToken(refreshToken, _appsetting.key);
-            var refreshtoken = _login.RefreshTokens(refreshTokenCookie);
-            var cookieOptions = new CookieOptions
+            return Ok(reFreshToken);
+        }
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            var refreshTokenCookie = Request.Cookies["refreshToken"];
+           var removeTokenDb = _login.Logout(refreshTokenCookie);
+            if(removeTokenDb == true){
+                DeleteCookie();
+                return Ok("Thoat thanh cong");
+            }
+            else
+            {
+                return NoContent();
+            }
+        }
+        [NonAction]
+        public string DeleteCookie()
+        {
+            Response.Cookies.Delete("refreshToken");
+            return "Cookies are Deleted";
+        }
+        [NonAction]
+        public CookieOptions SetOptionCookies()
+        {
+           return  new CookieOptions
             {
                 HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(1),
+                Expires = DateTime.UtcNow.AddDays(7),
                 Secure = true,
-                IsEssential = true,
-               
-            };
-            Response.Cookies.Append("refreshToken", refreshTokenCookie, cookieOptions);
+                IsEssential = true
 
-            return Ok(refreshtoken);
+            };
         }
-        
     }
 }

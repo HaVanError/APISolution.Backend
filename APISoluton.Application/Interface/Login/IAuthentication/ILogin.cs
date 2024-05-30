@@ -12,5 +12,6 @@ namespace APISoluton.Application.Interface.Login.IAuthentication
     {
         TokenResponse Authentication(LoginVM model);
         TokenResponse RefreshTokens(string token);
+        bool Logout(string refreshToken);
     }
 }

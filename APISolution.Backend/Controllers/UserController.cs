@@ -21,12 +21,13 @@ namespace APISolution.Backend.Controllers
             _users = users;
         }
         [HttpPost]
+        
         public async Task<IActionResult> Add(UserVM user)
         {
             return Ok( await _user.CreatUser(user));
         }
         [HttpGet]
-        [Authorize(Roles ="Admin")]
+        [Authorize]
        
         public async Task<IActionResult> GetUser()
         {

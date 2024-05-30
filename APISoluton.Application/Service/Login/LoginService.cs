@@ -1,5 +1,6 @@
 ﻿using APISolution.Database.DatabaseContext;
 using APISolution.Database.Entity;
+using APISoluton.Application.Helper;
 using APISoluton.Application.Interface.Login.IAuthentication;
 using APISoluton.Application.Interface.User.Commands;
 using APISoluton.Application.ViewModel;
@@ -7,11 +8,13 @@ using Azure;
 using Azure.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -23,19 +26,21 @@ namespace APISoluton.Application.Service.Login
     {
         private readonly DdConnect _db;
         private readonly IConfiguration _config;
+        private readonly Appsetting _appsetting;
 
-        public LoginService(DdConnect db,IConfiguration config) { _db = db; _config = config; }
+        public LoginService(DdConnect db,IConfiguration config,IOptions<Appsetting>appsetting) {
+            _db = db; _config = config; _appsetting = appsetting.Value; }
         public TokenResponse Authentication(LoginVM model)
         {
             var user = _db.Users.SingleOrDefault(x => x.Email == model.Email && x.Password == model.Password);
             if (user != null)
             {
-                var accessToken = GenerateAccessToken(user, _config["Jwt:Secret"]);
-                var refreshtoken = this.GenerateRefreshToken();
+                var accessToken = GenerateAccessToken(user, _appsetting.key);
+                var refreshtToken = this.GenerateRefreshToken();
                 var tokens = new ResfreshToken();
                 tokens.Created = DateTime.UtcNow;
                 tokens.Accesstoken = accessToken;
-                tokens.Resfreshtoken = refreshtoken.Token;
+                tokens.Resfreshtoken = refreshtToken.Token;
                 tokens.Expires = DateTime.UtcNow.AddMinutes(20);
                 tokens.RoleName = user.Role.NameRole;
                 tokens.idUser = user.Id;
@@ -44,7 +49,7 @@ namespace APISoluton.Application.Service.Login
                 return  new TokenResponse
                 {
                     AccessToken = accessToken,
-                    RefreshToken = refreshtoken.Token,
+                    RefreshToken = refreshtToken.Token,
                };
             }
             else
@@ -72,19 +77,8 @@ namespace APISoluton.Application.Service.Login
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-
-     
-     
-
         public  string GenerateAccessTokenFromRefreshToken(string refreshToken, string secret)
         {
-            // Implement logic to generate a new access token from the refresh token
-            // Verify the refresh token and extract necessary information (e.g., user ID)
-            // Then generate a new access token
-
-            // For demonstration purposes, return a new token with an extended expiry
-
-
             var checktokne = _db.ResfreshTokens.Where(x=>x.Resfreshtoken == refreshToken).FirstOrDefault();
             if(checktokne != null)
             {
@@ -98,7 +92,7 @@ namespace APISoluton.Application.Service.Login
                         new Claim("id",checktokne.idUser.ToString()),
                         new Claim(ClaimTypes.Role, checktokne.RoleName),
                     }),
-                    Expires = DateTime.UtcNow.AddMinutes(15), // Extend expiration time
+                    Expires = DateTime.UtcNow.AddMinutes(15),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
                
@@ -111,16 +105,27 @@ namespace APISoluton.Application.Service.Login
             return "Erorr";
         }
 
+        public bool Logout(string refreshToken)
+        {
+            var check = _db.ResfreshTokens.SingleOrDefault(x => x.Resfreshtoken == refreshToken);
+            if (check != null) {
+              _db.ResfreshTokens.Remove(check);
+                _db.SaveChanges();
+                return true;
+            }
+            else 
+            return false;
+        }
 
         public TokenResponse RefreshTokens(string token)
         {
           
-            var newAccessToken = GenerateAccessTokenFromRefreshToken(token, _config["Jwt:Secret"]);
+            var newAccessToken = GenerateAccessTokenFromRefreshToken(token, _appsetting.key);
 
             var response = new TokenResponse
             {
                 AccessToken = newAccessToken,
-                RefreshToken = token // Return the same refresh token
+                RefreshToken = token 
 
             };
             return response;
