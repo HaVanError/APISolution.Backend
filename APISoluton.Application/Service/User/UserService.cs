@@ -26,6 +26,21 @@ namespace APISoluton.Application.Service.User
             return "thanh cong";
         }
 
+        public async Task<string> DeleteUser(int id)
+        {
+           var checkUser = _db.Users.FirstOrDefault(u => u.Id == id);
+            if (checkUser != null)
+            {
+                _db.Users.Remove(checkUser);
+                await _db.SaveChangesAsync();
+                return "Xóa thành công User" + id;
+            }
+            else
+            {
+                return "Xóa Không thành công User" + id;
+            }
+        }
+
         public async Task<List<UserVMShowAll>> GetListUsers()
         {
             //var ds = await _db.Users.ToListAsync();
@@ -53,6 +68,25 @@ namespace APISoluton.Application.Service.User
 
                        };
             return data.ToList();
+        }
+
+        public async Task<string> UpdateUser(int id, UserVM userVM)
+        {
+           var checkuser = _db.Users.FirstOrDefault(u=>u.Id == id);
+            if (checkuser != null)
+            {
+                checkuser.Email = userVM.Email;
+                checkuser.Password = userVM.Password;
+                checkuser.Name = userVM.Name;
+                checkuser.Address = userVM.Address;
+                checkuser.City = userVM.City;
+                checkuser.IdRole = userVM.IdRole;
+                _db.Entry(checkuser).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                await _db.SaveChangesAsync();
+                return "Cập nhật thành công" + checkuser.Name;
+            }
+            else
+                return "Cập nhật không thành công";
         }
     }
 

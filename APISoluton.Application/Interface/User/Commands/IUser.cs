@@ -10,5 +10,7 @@ namespace APISoluton.Application.Interface.User.Commands
     public interface IUser
     {
         Task<string> CreatUser(UserVM userVM);
+        Task<string> DeleteUser(int id );
+        Task<string> UpdateUser(int id, UserVM userVM);
     }
 }
