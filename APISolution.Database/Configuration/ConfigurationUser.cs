@@ -19,7 +19,7 @@ namespace APISolution.Database.Configuration
             builder.Property(x=>x.Name).HasDefaultValue(50).IsRequired();
             builder.Property(x => x.Address).HasDefaultValue(200).IsRequired();
             builder.Property(x => x.City).HasDefaultValue(100).IsRequired();
-          builder.HasOne(x => x.Role).WithOne(x => x.User).HasForeignKey<User>(x => x.IdRole).OnDelete(DeleteBehavior.Restrict);
+          builder.HasOne(x => x.Role).WithMany(x => x.User).HasForeignKey(x => x.IdRole).OnDelete(DeleteBehavior.Restrict);
             
 
         }

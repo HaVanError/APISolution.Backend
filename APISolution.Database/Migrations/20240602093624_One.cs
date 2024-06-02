@@ -87,8 +87,7 @@ namespace APISolution.Database.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_UserInformation_IdRole",
                 table: "UserInformation",
-                column: "IdRole",
-                unique: true);
+                column: "IdRole");
         }
 
         /// <inheritdoc />

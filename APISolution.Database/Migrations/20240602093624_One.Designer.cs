@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APISolution.Database.Migrations
 {
     [DbContext(typeof(DdConnect))]
-    [Migration("20240529142535_One")]
+    [Migration("20240602093624_One")]
     partial class One
     {
         /// <inheritdoc />
@@ -122,8 +122,7 @@ namespace APISolution.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdRole")
-                        .IsUnique();
+                    b.HasIndex("IdRole");
 
                     b.ToTable("UserInformation", (string)null);
                 });
@@ -142,8 +141,8 @@ namespace APISolution.Database.Migrations
             modelBuilder.Entity("APISolution.Database.Entity.User", b =>
                 {
                     b.HasOne("APISolution.Database.Entity.Role", "Role")
-                        .WithOne("User")
-                        .HasForeignKey("APISolution.Database.Entity.User", "IdRole")
+                        .WithMany("User")
+                        .HasForeignKey("IdRole")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -152,8 +151,7 @@ namespace APISolution.Database.Migrations
 
             modelBuilder.Entity("APISolution.Database.Entity.Role", b =>
                 {
-                    b.Navigation("User")
-                        .IsRequired();
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("APISolution.Database.Entity.User", b =>

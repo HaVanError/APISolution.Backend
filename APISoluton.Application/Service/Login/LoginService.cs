@@ -35,22 +35,34 @@ namespace APISoluton.Application.Service.Login
             var user = _db.Users.SingleOrDefault(x => x.Email == model.Email && x.Password == model.Password);
             if (user != null)
             {
-                var accessToken = GenerateAccessToken(user, _appsetting.key);
+                var accessToken = GenerateAccessToken(user, _config.GetSection("Jwt:Secret").Value);
                 var refreshtToken = this.GenerateRefreshToken();
-                var tokens = new ResfreshToken();
-                tokens.Created = DateTime.UtcNow;
-                tokens.Accesstoken = accessToken;
-                tokens.Resfreshtoken = refreshtToken.Token;
-                tokens.Expires = DateTime.UtcNow.AddMinutes(20);
-                tokens.RoleName = user.Role.NameRole;
-                tokens.idUser = user.Id;
-                _db.ResfreshTokens.Add(tokens);
-                _db.SaveChanges();
-                return  new TokenResponse
+                var checktoken = _db.ResfreshTokens.SingleOrDefault(x => x.idUser == user.Id);
+                if (checktoken != null) {
+                    var rest = RefreshTokens(checktoken.Resfreshtoken);
+                    return new TokenResponse
+                    {
+                        AccessToken = rest.AccessToken,
+                        RefreshToken = rest.RefreshToken,
+                    };
+                }
+                else
                 {
-                    AccessToken = accessToken,
-                    RefreshToken = refreshtToken.Token,
-               };
+                    var tokens = new ResfreshToken();
+                    tokens.Created = DateTime.UtcNow;
+                    tokens.Accesstoken = accessToken;
+                    tokens.Resfreshtoken = refreshtToken.Token;
+                    tokens.Expires = DateTime.UtcNow.AddMinutes(20);
+                    tokens.RoleName = user.Role.NameRole;
+                    tokens.idUser = user.Id;
+                    _db.ResfreshTokens.Add(tokens);
+                    _db.SaveChanges();
+                    return new TokenResponse
+                    {
+                        AccessToken = accessToken,
+                        RefreshToken = refreshtToken.Token,
+                    };
+                }
             }
             else
             {
@@ -58,10 +70,10 @@ namespace APISoluton.Application.Service.Login
             }
           
         }
-        public  string GenerateAccessToken(APISolution.Database.Entity.User user, string secret)
+        public  string GenerateAccessToken(APISolution.Database.Entity.User user,string Secret)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(secret);
+            var key = Encoding.ASCII.GetBytes(Secret);
             var checkrole = _db.Roles.Where(x => x.idRole == user.IdRole).FirstOrDefault();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -120,7 +132,7 @@ namespace APISoluton.Application.Service.Login
         public TokenResponse RefreshTokens(string token)
         {
           
-            var newAccessToken = GenerateAccessTokenFromRefreshToken(token, _appsetting.key);
+            var newAccessToken = GenerateAccessTokenFromRefreshToken(token, _config.GetSection("Jwt:Secret").Value);
 
             var response = new TokenResponse
             {

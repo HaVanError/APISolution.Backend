@@ -30,6 +30,9 @@ namespace APISolution.Backend.Controllers
         [AllowAnonymous]
         public IActionResult Authentication(LoginVM model)
         {
+            if (!ModelState.IsValid) { 
+                return NoContent();
+            }
             var kiemTra =_login.Authentication(model);
             var setCookie =  SetOptionCookies();
             Response.Cookies.Append("refreshToken", kiemTra.RefreshToken,setCookie);

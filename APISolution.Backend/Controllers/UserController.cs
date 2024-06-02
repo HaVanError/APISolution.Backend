@@ -27,7 +27,7 @@ namespace APISolution.Backend.Controllers
             return Ok( await _user.CreatUser(user));
         }
         [HttpGet]
-        [Authorize]
+       // [Authorize]
        
         public async Task<IActionResult> GetUser()
         {

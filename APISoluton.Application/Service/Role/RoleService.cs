@@ -32,7 +32,7 @@ namespace APISoluton.Application.Service.Role
 
         public string Delete(int id)
         {
-           var check = _db.Roles.SingleOrDefault(x=>x.idRole == id);
+           var check = _db.Roles.Where(x=>x.idRole == id).FirstOrDefault();
             if (check!=null)
             {
                 _db.Roles.Remove(check);

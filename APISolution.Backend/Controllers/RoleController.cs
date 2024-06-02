@@ -31,13 +31,13 @@ namespace APISolution.Backend.Controllers
             return Ok(_roles.GetAllRoles());
         }
         [HttpPut("{id:int}")]
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         public IActionResult UpdateRole(int id , RoleVM model)
         {
             return Ok(_role.Update(model,id));
         }
         [HttpDelete]
-        [Authorize(Roles ="Admin")]
+       // [Authorize(Roles ="Admin")]
         public IActionResult DeleteRole(int id)
         {
             return Ok(_role.Delete(id));

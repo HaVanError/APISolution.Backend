@@ -8,6 +8,6 @@ namespace APISoluton.Application.Helper
 {
     public class Appsetting
     {
-        public string key {  get; set; }
+        public string Secret {  get; set; } = string.Empty;
     }
 }
