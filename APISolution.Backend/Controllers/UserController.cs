@@ -21,17 +21,30 @@ namespace APISolution.Backend.Controllers
             _users = users;
         }
         [HttpPost]
-        
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Add(UserVM user)
         {
             return Ok( await _user.CreatUser(user));
         }
         [HttpGet]
-       // [Authorize]
+       [Authorize(Roles ="Admin")]
        
         public async Task<IActionResult> GetUser()
         {
             return Ok(await _users.GetListUsers());
+        }
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUser( int id)
+        {
+            return Ok(await _user.DeleteUser(id));
+        }
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateUser(int id, UserVM user)
+        {
+            return Ok(await _user.UpdateUser(id, user));
+
         }
     }
 }
