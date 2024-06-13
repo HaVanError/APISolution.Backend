@@ -1,14 +1,29 @@
+using APISolution.Application.Stored_Procedure;
 using APISolution.Database.DatabaseContext;
+using APISolution.Database.Entity;
 using APISoluton.Application.Helper;
+using APISoluton.Application.Interface.DichVu.Commands;
+using APISoluton.Application.Interface.DichVu.Queries;
+using APISoluton.Application.Interface.IUsers.Queries;
+using APISoluton.Application.Interface.LoaiPhong.Commands;
+using APISoluton.Application.Interface.LoaiPhong.Queries;
 using APISoluton.Application.Interface.Login.IAuthentication;
+using APISoluton.Application.Interface.PhieuDatPhong.Commands;
+using APISoluton.Application.Interface.PhieuDatPhong.Queries;
+using APISoluton.Application.Interface.Phong.Commands;
+using APISoluton.Application.Interface.Phong.Queries;
 using APISoluton.Application.Interface.Role.Commands;
 using APISoluton.Application.Interface.Role.Queries;
-using APISoluton.Application.Interface.User.Commands;
-using APISoluton.Application.Interface.User.Queries;
+using APISoluton.Application.Interface.IUsers.Commands;
 using APISoluton.Application.MappeerConfiguration;
+using APISoluton.Application.Service.CacheServices;
+using APISoluton.Application.Service.DichVuServices;
+using APISoluton.Application.Service.LoaiPhongServices;
 using APISoluton.Application.Service.Login;
+using APISoluton.Application.Service.PhieuDatPhongServices;
+using APISoluton.Application.Service.PhongServices;
 using APISoluton.Application.Service.Role;
-using APISoluton.Application.Service.User;
+using APISoluton.Application.Service.UserServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +31,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
+using System.Windows.Input;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,12 +70,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddDbContext<DdConnect>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("db")));
 #region Add DI SERVICE
-builder.Services.AddScoped<IUser, UserService>();
-builder.Services.AddScoped<IUsers, UserService>();
-builder.Services.AddScoped<IRole, RoleService>();
-builder.Services.AddScoped<IRoles, RoleService>();
+builder.Services.AddScoped<IUserCommaind, UserService>();
+builder.Services.AddScoped<IUsersQueries, UserService>();
+builder.Services.AddScoped<IRoleCommand, RoleService>();
+builder.Services.AddScoped<IRolesQueries, RoleService>();
 builder.Services.AddScoped<ILogin, LoginService>();
-
+builder.Services.AddScoped<IPhongCommand, PhongService>();
+builder.Services.AddScoped<IPhongQueries, PhongService>();
+builder.Services.AddScoped<ILoaiPhongQueries, LoaiPhongService>();
+builder.Services.AddScoped<ILoaiPhongCommand, LoaiPhongService>();
+builder.Services.AddScoped<IPhieuDatPhongQueries, PhieuDatPhongService>();
+builder.Services.AddScoped<IPhieuDatPhongCommand, PhieuDatPhongService>();
+builder.Services.AddScoped<IDichVuCommand, DichVuService>();
+builder.Services.AddScoped<IDichVuQueries, DichVuService>();
+//Cache
+builder.Services.AddMemoryCache(); // thêm cache 
+builder.Services.AddSingleton<CacheServices>();
+builder.Services.AddScoped<Procedure>();
 #endregion
 builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 

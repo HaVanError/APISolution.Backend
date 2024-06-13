@@ -2,8 +2,8 @@
 using APISolution.Database.Entity;
 using APISoluton.Application.Helper;
 using APISoluton.Application.Interface.Login.IAuthentication;
-using APISoluton.Application.Interface.User.Commands;
-using APISoluton.Application.ViewModel;
+using APISoluton.Application.Interface.IUsers.Commands;
+using APISoluton.Application.ViewModel.LoginView;
 using Azure;
 using Azure.Core;
 using Microsoft.AspNetCore.Http;
@@ -74,7 +74,7 @@ namespace APISoluton.Application.Service.Login
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(Secret);
-            var checkrole = _db.Roles.Where(x => x.idRole == user.IdRole).FirstOrDefault();
+            var checkrole = _db.Roles.Where(x => x.IdRole == user.IdRole).FirstOrDefault();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(

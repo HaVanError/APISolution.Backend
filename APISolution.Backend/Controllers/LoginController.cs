@@ -1,8 +1,8 @@
 ﻿using APISolution.Database.Entity;
 using APISoluton.Application.Helper;
 using APISoluton.Application.Interface.Login.IAuthentication;
-using APISoluton.Application.Interface.User.Commands;
-using APISoluton.Application.ViewModel;
+using APISoluton.Application.Interface.IUsers.Commands;
+using APISoluton.Application.ViewModel.LoginView;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

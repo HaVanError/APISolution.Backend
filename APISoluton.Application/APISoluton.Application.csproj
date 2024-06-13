@@ -15,4 +15,8 @@
     <ProjectReference Include="..\APISolution.Database\APISolution.Database.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewModel\PhieuDatPhongView\PhieuDatPhongViewShow\" />
+  </ItemGroup>
+
 </Project>

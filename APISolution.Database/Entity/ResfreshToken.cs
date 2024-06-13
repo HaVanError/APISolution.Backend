@@ -16,7 +16,7 @@ namespace APISolution.Database.Entity
         public string Accesstoken {  get; set; } = string.Empty;
         public string Resfreshtoken {  get; set; } = string.Empty;
         public int idUser { get; set; }
-        public User User { get; set; }
+        public User ?User { get; set; } 
         
         
       

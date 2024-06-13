@@ -14,7 +14,7 @@ namespace APISolution.Database.Configuration
         public void Configure(EntityTypeBuilder<ResfreshToken> builder)
         {
             builder.HasKey(x => x.IdToken);
-            builder.HasOne(x => x.User).WithOne(x => x.ResfreshToken).HasForeignKey<ResfreshToken>(x => x.idUser).OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.User).WithOne(x => x.ResfreshToken).HasForeignKey<ResfreshToken>(x => x.idUser).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

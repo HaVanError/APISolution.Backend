@@ -8,7 +8,7 @@ namespace APISolution.Database.Entity
 {
     public class Role
     {
-        public int idRole {  get; set; }
+        public int IdRole {  get; set; }
         public string NameRole {  get; set; }
         public string MoTa {  get; set; }   
         public List <User> User { get; set; } = default!;
