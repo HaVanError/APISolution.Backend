@@ -10,7 +10,7 @@ namespace APISoluton.Application.Interface.IUsers.Queries
 {
     public interface IUsersQueries
     {
-        Task<List<User>> GetListUsers();
+        Task<List<User>> GetListUsers(int pageNumber, int pageSize);
         Task<User> GetUserByName(string name);
       
     }

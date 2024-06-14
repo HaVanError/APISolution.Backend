@@ -39,9 +39,11 @@ namespace APISolution.Application.Stored_Procedure
 
             return users;
         }
-        public async Task<List<User>> GetAllUsers()
+        public async Task<List<User>> GetAllUsers(int pageNumber, int pageSize)
         {
-            var users=  await _db.Users.FromSqlRaw($"EXECUTE GetAllUser").ToListAsync();
+            var pageNumberParam = new SqlParameter("@PageNumber", pageNumber);
+            var pageSizeParam = new SqlParameter("@PageSize", pageSize);
+            var users=  await _db.Users.FromSqlRaw($"EXECUTE GetAllUser @PageNumber, @PageSize", pageNumberParam, pageSizeParam).ToListAsync();
             return users;
 
 

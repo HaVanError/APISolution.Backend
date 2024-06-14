@@ -44,7 +44,7 @@ namespace APISoluton.Application.Service.UserServices
                 _cacheServices.Refresh(key, checkUser, TimeSpan.FromMinutes(30));
             }
         }
-        public async Task<List<User>> GetListUsers()
+        public async Task<List<User>> GetListUsers(int pageNumber, int pageSize)
         {
             //var data =  from User in _db.Users
             //                 join Role in _db.Roles on User.IdRole equals Role.IdRole
@@ -57,7 +57,7 @@ namespace APISoluton.Application.Service.UserServices
             //                     City = User.City,
             //                     Role = Role.NameRole
             //                 };
-            var list= await _procedure.GetAllUsers();
+            var list= await _procedure.GetAllUsers( pageNumber,  pageSize);
             var key = "User";
             _cacheServices.SetList(key, list, TimeSpan.FromMinutes(30));
             return list;

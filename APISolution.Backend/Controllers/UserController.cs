@@ -79,12 +79,12 @@ namespace APISolution.Backend.Controllers
         [HttpGet]
         //   [Authorize(Roles ="Admin")]
 
-        public async Task<ActionResult<UserVMShowAll>> GetUser()
+        public async Task<ActionResult<UserVMShowAll>> GetUser(int pageNumber = 1, int pageSize=5)
         {
             var exit = _cache.Get<UserVMShowAll>(key);
             if (exit == null)
             {
-                var listUser = await _users.GetListUsers();
+                var listUser = await _users.GetListUsers( pageNumber,  pageSize);
              
                 return Ok(listUser);
             }
