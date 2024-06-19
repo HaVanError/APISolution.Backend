@@ -1,7 +1,6 @@
 ﻿using APISolution.Database.DatabaseContext;
 using APISolution.Database.Entity;
-using APISoluton.Application.ViewModel.UserView;
-using APISoluton.Application.ViewModel.UserView.UserViewShow;
+using APISoluton.Database.ViewModel.UserView;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,18 +10,22 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APISolution.Application.Stored_Procedure
+namespace APISolution.Database.Stored_Procedure
 {
-    public class Procedure
+    public class ProcedureUser
     {
         private readonly DdConnect _db;
-        public Procedure(DdConnect db) { 
+        
+        public ProcedureUser(DdConnect db) { 
         _db = db;
     }
         public async Task UpdateUserStored(int id,UserVM model)
         {
-            await _db.Database.ExecuteSqlInterpolatedAsync(
-               $"EXEC UpdateUser @Id={id}, @Email = {model.Email}, @Password = {model.Password}, @Name = {model.Name}, @Address = {model.Address}, @City = {model.City}, @IdRole = {model.IdRole}");
+           
+                await _db.Database.ExecuteSqlInterpolatedAsync(
+              $"EXEC UpdateUser @Id={id}, @Email = {model.Email}, @Password = {model.Password}, @Name = {model.Name}, @Address = {model.Address}, @City = {model.City}, @IdRole = {model.IdRole}");
+         
+           
         }
         public  async Task CreatUserStored(UserVM model)
         {
@@ -43,9 +46,8 @@ namespace APISolution.Application.Stored_Procedure
         {
             var pageNumberParam = new SqlParameter("@PageNumber", pageNumber);
             var pageSizeParam = new SqlParameter("@PageSize", pageSize);
-            var users=  await _db.Users.FromSqlRaw($"EXECUTE GetAllUser @PageNumber, @PageSize", pageNumberParam, pageSizeParam).ToListAsync();
-            return users;
-
+            var users=  await _db.Users.FromSqlRaw($"EXECUTE GetAllUser @PageNumber, @PageSize", pageNumberParam, pageSizeParam).AsNoTracking().ToListAsync();
+            return users.ToList();
 
         }
         public async Task DeleteUserAsync(int id)

@@ -1,4 +1,4 @@
-﻿using APISoluton.Application.ViewModel.PhongView;
+﻿using APISoluton.Database.ViewModel.PhongView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace APISoluton.Application.Interface.Phong.Commands
     public interface IPhongCommand
     {
         Task<PhongVM> AddPhong(PhongVM model);
-        Task<string> RemovePhong(int id);
-        Task<string> UpdatePhong(PhongVM model , int id);
+        Task RemovePhong(int id);
+        Task UpdatePhong(PhongVM model , int id);
     }
 }

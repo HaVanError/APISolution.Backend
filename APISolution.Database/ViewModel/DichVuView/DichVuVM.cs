@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APISoluton.Application.ViewModel.DichVuView
+namespace APISoluton.Database.ViewModel.DichVuView
 {
     public class DichVuVM
     {

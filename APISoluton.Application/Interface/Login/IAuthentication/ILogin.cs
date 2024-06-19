@@ -1,5 +1,5 @@
 ﻿using APISolution.Database.Entity;
-using APISoluton.Application.ViewModel.LoginView;
+using APISoluton.Database.ViewModel.LoginView;
 using System;
 using System.Collections.Generic;
 using System.Linq;

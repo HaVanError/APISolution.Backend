@@ -1,5 +1,4 @@
-using APISolution.Application.Stored_Procedure;
-using APISolution.Database.DatabaseContext;
+﻿using APISolution.Database.DatabaseContext;
 using APISolution.Database.Entity;
 using APISoluton.Application.Helper;
 using APISoluton.Application.Interface.DichVu.Commands;
@@ -12,17 +11,15 @@ using APISoluton.Application.Interface.PhieuDatPhong.Commands;
 using APISoluton.Application.Interface.PhieuDatPhong.Queries;
 using APISoluton.Application.Interface.Phong.Commands;
 using APISoluton.Application.Interface.Phong.Queries;
-using APISoluton.Application.Interface.Role.Commands;
-using APISoluton.Application.Interface.Role.Queries;
+
 using APISoluton.Application.Interface.IUsers.Commands;
 using APISoluton.Application.MappeerConfiguration;
 using APISoluton.Application.Service.CacheServices;
-using APISoluton.Application.Service.DichVuServices;
+
 using APISoluton.Application.Service.LoaiPhongServices;
 using APISoluton.Application.Service.Login;
 using APISoluton.Application.Service.PhieuDatPhongServices;
 using APISoluton.Application.Service.PhongServices;
-using APISoluton.Application.Service.Role;
 using APISoluton.Application.Service.UserServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -32,6 +29,12 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using System.Windows.Input;
+using APISolution.Database.Stored_Procedure;
+using APISoluton.Database.Stored_Procedure;
+using APISoluton.Application.Interface.IRole.Commands;
+using APISoluton.Application.Interface.IRole.Queries;
+using APISoluton.Application.Service.RoleServices;
+using APISoluton.Application.Service.DichVuServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -84,13 +87,28 @@ builder.Services.AddScoped<IPhieuDatPhongCommand, PhieuDatPhongService>();
 builder.Services.AddScoped<IDichVuCommand, DichVuService>();
 builder.Services.AddScoped<IDichVuQueries, DichVuService>();
 //Cache
-builder.Services.AddMemoryCache(); // th�m cache 
+builder.Services.AddMemoryCache(); // thêm cache 
 builder.Services.AddSingleton<CacheServices>();
-builder.Services.AddScoped<Procedure>();
+builder.Services.AddScoped<ProcedureUser>();
+builder.Services.AddScoped<ProcedurePhong>();
+builder.Services.AddScoped<ProcedureLoaiPhong>();
+builder.Services.AddScoped<ProcedureDichVu>();
+builder.Services.AddScoped<ProcedureRole>();
 #endregion
 builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 
 builder.Services.Configure<Appsetting>(builder.Configuration.GetSection("Jwt:Secret"));
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("api",
+        builder =>
+        {
+            builder
+                .AllowAnyOrigin() // Cho phép tất cả các origin (domain)
+                .AllowAnyMethod() // Cho phép tất cả các phương thức HTTP
+                .AllowAnyHeader(); // Cho phép tất cả các header
+        });
+});
 
 var app = builder.Build();
 
@@ -102,7 +120,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseSwagger();
 app.UseSwaggerUI();
-
+app.UseCors("api");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

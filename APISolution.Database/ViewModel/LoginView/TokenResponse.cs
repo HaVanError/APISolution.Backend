@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APISoluton.Application.ViewModel.LoginView
+namespace APISoluton.Database.ViewModel.LoginView
 {
     public class TokenResponse
     {

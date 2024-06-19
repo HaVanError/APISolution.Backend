@@ -1,6 +1,5 @@
 ﻿using APISolution.Database.Entity;
-using APISoluton.Application.ViewModel.LoaiPhongView;
-using APISoluton.Application.ViewModel.PhongView;
+using APISoluton.Database.ViewModel.LoaiPhongView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +11,7 @@ namespace APISoluton.Application.Interface.LoaiPhong.Commands
     public interface ILoaiPhongCommand
     {
         Task<LoaiPhongVM> AddLoaiPhong(LoaiPhongVM model);
-        Task<string> RemovePhong(int id);
-        Task<string> UpdatePhong(LoaiPhongVM model, int id);
+        Task RemovePhong(int id);
+        Task UpdateLoaiPhong(LoaiPhongVM model, int id);
     }
 }

@@ -2,14 +2,15 @@
 using APISoluton.Application.Interface.IUsers.Queries;
 using APISoluton.Application.Interface.IUsers.Commands;
 using APISoluton.Application.Service.CacheServices;
-using APISoluton.Application.ViewModel.DichVuView;
-using APISoluton.Application.ViewModel.UserView;
-using APISoluton.Application.ViewModel.UserView.UserViewShow;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using APISoluton.Database.ViewModel.UserView;
+using APISoluton.Database.ViewModel.UserView.UserViewShow;
+using System.Drawing.Printing;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace APISolution.Backend.Controllers
 {
     [Route("api/[controller]")]
@@ -19,7 +20,8 @@ namespace APISolution.Backend.Controllers
         private readonly IUserCommaind _user;
         private readonly IUsersQueries _users;
         private readonly CacheServices _cache; // DI MemoryCache Vào Class
-        private static readonly string key = "User"; 
+        private readonly static string key = "User";
+            
         public UserController(IUserCommaind user, IUsersQueries users, CacheServices cache) {
 
             _user = user;
@@ -56,6 +58,7 @@ namespace APISolution.Backend.Controllers
         //   [Authorize(Roles ="Admin")]
         public async Task<ActionResult<User>> GetUserById(string name)
         {
+           
             var checkcache = _cache.Get<User>(key);
             if (checkcache == null)
             {
@@ -74,18 +77,22 @@ namespace APISolution.Backend.Controllers
             {
                 return checkcache;
             }
-         
+
         }
         [HttpGet]
         //   [Authorize(Roles ="Admin")]
 
         public async Task<ActionResult<UserVMShowAll>> GetUser(int pageNumber = 1, int pageSize=5)
         {
-            var exit = _cache.Get<UserVMShowAll>(key);
+            
+          string  keyss = $"user_{pageNumber}_{pageSize}";
+          
+            var exit = _cache.GetList<UserVMShowAll>(keyss);
+            
             if (exit == null)
             {
-                var listUser = await _users.GetListUsers( pageNumber,  pageSize);
-             
+                var listUser = await _users.GetListUsers(pageNumber, pageSize);
+
                 return Ok(listUser);
             }
             else

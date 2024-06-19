@@ -1,5 +1,5 @@
 ﻿using APISolution.Database.Entity;
-using APISoluton.Application.ViewModel.PhieuDatPhongView;
+using APISoluton.Database.ViewModel.PhieuDatPhongView;
 using System;
 using System.Collections.Generic;
 using System.Linq;

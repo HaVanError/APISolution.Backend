@@ -1,5 +1,4 @@
-﻿using APISoluton.Application.ViewModel.DichVuView;
-using APISoluton.Application.ViewModel.UserView.UserViewShow;
+﻿using APISoluton.Database.ViewModel.DichVuView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +9,8 @@ namespace APISoluton.Application.Interface.DichVu.Queries
 {
     public interface IDichVuQueries
     {
-        Task<List<DichVuVM>>GetAllDichVu();
+        Task<List<DichVuVM>>GetAllDichVu(int pageNumber, int pageSize);
       
-        Task<IEnumerable<DichVuVM>>GetByIdDichVu(int id);
+        Task<DichVuVM>GetByIdDichVu(int id);
     }
 }

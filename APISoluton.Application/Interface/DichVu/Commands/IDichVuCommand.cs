@@ -1,4 +1,4 @@
-﻿using APISoluton.Application.ViewModel.DichVuView;
+﻿using APISoluton.Database.ViewModel.DichVuView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace APISoluton.Application.Interface.DichVu.Commands
     public interface IDichVuCommand
     {
         Task<DichVuVM> AddDichVu(DichVuVM model);
-        Task<IEnumerable<DichVuVM>> UpdateDichVu(DichVuVM model,int id);
+        Task<DichVuVM> UpdateDichVu(DichVuVM model,int id);
         Task DeleteDichVu(int id);
     }
 }

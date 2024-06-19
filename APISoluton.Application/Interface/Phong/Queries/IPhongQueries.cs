@@ -1,4 +1,5 @@
-﻿using APISoluton.Application.ViewModel.PhongView.PhongViewShowClient;
+﻿using APISoluton.Database.ViewModel.PhongView;
+using APISoluton.Database.ViewModel.PhongView.PhongViewShowClient;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace APISoluton.Application.Interface.Phong.Queries
 {
     public interface IPhongQueries
     {
-        Task<List<PhongVMShow>> GetAllPhong();
-        Task<PhongVMShow> GetPhongById(int id);
+        Task<List<PhongVMShow>> GetAllPhong(int pageNumber, int pageSize);
+        Task<PhongVM> GetPhongById(int id);
     }
 }

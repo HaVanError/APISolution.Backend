@@ -1,4 +1,4 @@
-﻿using APISoluton.Application.ViewModel.LoaiPhongView;
+﻿using APISoluton.Database.ViewModel.LoaiPhongView;
 using System;
 using System.Collections.Generic;
 using System.Linq;

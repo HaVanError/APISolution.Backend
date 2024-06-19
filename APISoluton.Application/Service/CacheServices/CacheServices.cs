@@ -10,15 +10,17 @@ namespace APISoluton.Application.Service.CacheServices
     public class CacheServices
     {
         private readonly IMemoryCache _memoryCache;
+        private readonly HashSet<string> _cachedKeys;
         public CacheServices(IMemoryCache memoryCache)
         {
-        _memoryCache = memoryCache; 
+            _memoryCache = memoryCache;
+            _cachedKeys = new HashSet<string>();
         }
         public void Set<T>(string key, T value, TimeSpan expirationTime)
         {
             var cacheEntryOptions = new MemoryCacheEntryOptions
             {
-               // AbsoluteExpirationRelativeToNow = expirationTime
+              
                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
                 SlidingExpiration = TimeSpan.FromMinutes(2)
             };
@@ -36,8 +38,8 @@ namespace APISoluton.Application.Service.CacheServices
         }
         public void Refresh<T>(string key, T newValue, TimeSpan expirationTime)
         {
-            Remove(key); // Remove the old value
-            Set(key, newValue, expirationTime); // Set the new value
+            Remove(key); 
+            Set(key, newValue, expirationTime); 
         }
         public bool Exists(string key)
         {
@@ -47,12 +49,14 @@ namespace APISoluton.Application.Service.CacheServices
         {
             return Get<List<T>>(key);
         }
-
-        // Set list in cache
+       
         public void SetList<T>(string key, List<T> value, TimeSpan expirationTime)
         {
+           
             Set(key, value, expirationTime);
         }
+       
+
     }
 }
 

@@ -1,10 +1,11 @@
 ﻿using APISolution.Database.Entity;
 using APISoluton.Application.Interface.DichVu.Commands;
 using APISoluton.Application.Interface.DichVu.Queries;
-using APISoluton.Application.ViewModel.DichVuView;
-using APISoluton.Application.ViewModel.UserView.UserViewShow;
+using APISoluton.Database.ViewModel.DichVuView;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace APISolution.Backend.Controllers
@@ -16,62 +17,96 @@ namespace APISolution.Backend.Controllers
         private readonly IDichVuCommand _dichVuCommand;
         private readonly IDichVuQueries _dichVuQueries;
         private readonly IMemoryCache _cache;
-        public DichVuController(IDichVuCommand dichVuCommand, IDichVuQueries dichVuQueries,IMemoryCache cache)
+        public DichVuController(IDichVuCommand dichVuCommand, IDichVuQueries dichVuQueries, IMemoryCache cache)
         {
-         _dichVuCommand = dichVuCommand;
-         _dichVuQueries = dichVuQueries;
+            _dichVuCommand = dichVuCommand;
+            _dichVuQueries = dichVuQueries;
             _cache = cache;
         }
         [HttpPost]
         public async Task<IActionResult> AddDichVu(DichVuVM model)
         {
-            //try
-            //{
-            //    if (!ModelState.IsValid)
-            //    {
-            //        return BadRequest(ModelState);
-            //    }
-            //    if (model == null)
-            //    {
-            //        return BadRequest(ModelState);
-            //    }
-            //    var addUser = await _dichVuCommand.AddDichVu(model);
-            //    //_cache.Remove("items/DichVu");
-            //    return StatusCode(StatusCodes.Status201Created, model);
 
-            //}
-            //catch (Exception ex)
-            //{
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
 
-            //    return StatusCode(StatusCodes.Status500InternalServerError, model);
-            //}
-            if (!ModelState.IsValid) {
-            return BadRequest(ModelState);
-
-            }if (model == null)
+            }
+            if (model == null)
             {
                 return BadRequest(ModelState);
             }
             var dichvu = await _dichVuCommand.AddDichVu(model);
-            _cache.Set("items/DichVu",dichvu);
             return StatusCode(StatusCodes.Status201Created, dichvu);
-           
+
+        }
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteDichVu(int id)
+        {
+
+            if (id == 0)
+            {
+                return BadRequest();
+
+            }
+            else
+            {
+                await _dichVuCommand.DeleteDichVu(id);
+                return NoContent();
+            }
+        }
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateDichVu(int id, DichVuVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            else if (id == 0)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                await _dichVuCommand.UpdateDichVu(model, id);
+                return NoContent();
+            }
+
+
+        }
+    
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetByIdDichVu(int id )
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+
+            }
+            if (id ==0)
+            {
+                return BadRequest(ModelState);
+            }
+            var dichvu = await _dichVuQueries.GetByIdDichVu(id);
+        return Ok(dichvu);
+
         }
         [HttpGet]
-        public async Task<ActionResult<List<DichVuVM>>> GetAllDichVu()
+        public async Task<ActionResult<List<DichVuVM>>> GetAllDichVu(int pageNumber,int pageSize)
         {
-            if (!_cache.TryGetValue("items/DichVu", out List<DichVuVM> items))
-            {
-                items = await _dichVuQueries.GetAllDichVu();
-                var cacheEntryOptions = new MemoryCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
-                    SlidingExpiration = TimeSpan.FromMinutes(2)
-                };
-                _cache.Set("items/DichVu", items, cacheEntryOptions);
+            var key = $"dichVu_{pageNumber}_{pageSize}";
+            var baseDichVu = _cache.Get<List<DichVuVM>>(key);
+            if (baseDichVu == null) {
+                var listDichVu=await    _dichVuQueries.GetAllDichVu(pageNumber, pageSize);
+                return Ok(listDichVu);
             }
-            return items.ToList();
-       
+            else
+            {
+                return Ok(baseDichVu);
+            }
+
         }
+
     }
 }

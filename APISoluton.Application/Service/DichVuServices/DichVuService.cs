@@ -1,8 +1,8 @@
 ﻿using APISolution.Database.DatabaseContext;
-using APISolution.Database.Entity;
+using APISolution.Database.Stored_Procedure;
 using APISoluton.Application.Interface.DichVu.Commands;
 using APISoluton.Application.Interface.DichVu.Queries;
-using APISoluton.Application.ViewModel.DichVuView;
+using APISoluton.Database.ViewModel.DichVuView;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,72 +16,83 @@ namespace APISoluton.Application.Service.DichVuServices
     public class DichVuService : IDichVuCommand, IDichVuQueries
     {
         private readonly DdConnect _db;
-        private readonly IMapper _mapper;
-        public DichVuService(DdConnect db, IMapper mapper)
+        private  readonly IMapper _mapper;
+        private readonly CacheServices.CacheServices _cacheServices;
+        private readonly ProcedureDichVu _procedureDichVu;
+        static string _keyDichVu = "dichVu";
+        public DichVuService(DdConnect db, IMapper mapper, CacheServices.CacheServices cacheServices, ProcedureDichVu procedureDichVu)
         {
             _db = db;
             _mapper = mapper;
+            _cacheServices = cacheServices;
+             _procedureDichVu = procedureDichVu;
+
         }
+
         public async Task<DichVuVM> AddDichVu(DichVuVM model)
         {
-            var map = _mapper.Map<DichVu>(model);
-            await _db.DichVus.AddAsync(map);
-            await _db.SaveChangesAsync();
-            return model;
+            _cacheServices.Remove(_keyDichVu);
+            return  await _procedureDichVu.CreatDichVuStored(model);
+
         }
 
         public async Task DeleteDichVu(int id)
         {
-            var check = await _db.DichVus.FindAsync(id);
-            if (check != null) { 
-                _db.DichVus.Remove(check);
-                await _db.SaveChangesAsync();
-
+            var check = _db.DichVus.SingleOrDefault(x=>x.IdDichVu == id);
+            if (check != null)
+            {
+                await _procedureDichVu.DeleteDichVu(id);
+                _cacheServices.Remove(_keyDichVu);
             }
         }
 
-        public async Task<List<DichVuVM>> GetAllDichVu()
+        public async Task<List<DichVuVM>> GetAllDichVu(int pageNumber  , int pageSize)
         {
-            var list=  await _db.DichVus.AsNoTracking().ToListAsync();
-            var result = list.Select(x => new DichVuVM
+            var list =  await _db.DichVus.ToListAsync();
+            _keyDichVu = $"dichVu_{pageNumber}_{pageSize}";
+            var resual = list.Select(x => new DichVuVM
             {
                 NameDichVu = x.NameDichVu,
                 SoLuong = x.SoLuong,
                 Gia = x.Gia,
-            }).ToList();
-            return result.ToList();
-
-
-
+            }).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            _cacheServices.SetList(_keyDichVu,resual, TimeSpan.FromMinutes(30));
+            return resual;
         }
 
-        public async Task<IEnumerable<DichVuVM>> GetByIdDichVu(int id)
+        public async Task<DichVuVM> GetByIdDichVu(int id)
         {
-            var check =  await _db.DichVus.FindAsync(id);
+            //var check = await _db.DichVus.SingleOrDefaultAsync(x => x.IdDichVu == id);
+            //if (check != null)
+            //{
+            //  var dichVu=  await _procedureDichVu.GetByIdDichVu(id);
+            //    var map = _mapper.Map<DichVuVM>(dichVu);
+            //    _cacheServices.Remove(_keyDichVu);
+            //    return map;
+            //}
+            //else
+            //{
+            //    throw new NotImplementedException();
+            //}
+            var dichVu = await _procedureDichVu.GetByIdDichVu(id);
+               var map = _mapper.Map<DichVuVM>(dichVu);
+            return map;
+        }
+
+        public async Task<DichVuVM> UpdateDichVu(DichVuVM model, int id)
+        {
+            var check = await _db.DichVus.SingleOrDefaultAsync(x => x.IdDichVu == id);
             if (check != null)
             {
-                 var map = _mapper.Map<DichVuVM>(check);
-                 return (IEnumerable<DichVuVM>)map;
+              await _procedureDichVu.UpdateDichVuStored(id, model);
+                var map = _mapper.Map<DichVuVM>(check);
+                _cacheServices.Remove(_keyDichVu);
+                return map;
             }
             else
             {
-                return null ;
+                 throw new NotImplementedException(); 
             }
-        }
-
-        public async Task<IEnumerable<DichVuVM>> UpdateDichVu(DichVuVM model, int id)
-        {
-           
-            var check = await _db.DichVus.SingleOrDefaultAsync(x=>x.IdDichVu == id);
-            if (check != null)
-            {
-                var map = _mapper.Map<DichVu>(model);
-                _db.Entry(map).State = EntityState.Modified;
-                await _db.SaveChangesAsync();
-                return (IEnumerable<DichVuVM>)map;
-
-            }
-            else { return null; }
         }
     }
 }

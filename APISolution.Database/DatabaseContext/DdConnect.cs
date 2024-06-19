@@ -1,5 +1,6 @@
 ﻿using APISolution.Database.Configuration;
 using APISolution.Database.Entity;
+using APISoluton.Database.ViewModel.UserView;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ namespace APISolution.Database.DatabaseContext
             modelBuilder.ApplyConfiguration(new ConfigurationDichVu());
             modelBuilder.ApplyConfiguration(new ConfigurationPhieuDatPhong());
             modelBuilder.ApplyConfiguration(new ConfigurationPhieuDichVu());
+        
 
         }
     }

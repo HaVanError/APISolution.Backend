@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APISoluton.Application.ViewModel.LoaiPhongView
+namespace APISoluton.Database.ViewModel.LoaiPhongView
 {
     public class LoaiPhongVM
     {

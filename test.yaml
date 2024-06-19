@@ -1,0 +1,25 @@
+﻿config:
+  target: "http://localhost:5081"  # Thay thế URL này bằng địa chỉ thực của website cần kiểm thử
+  phases:
+    - duration: 60  # Thời gian chạy kiểm thử (giây)
+      arrivalRate: 10  # Tốc độ đến (yêu cầu/giây)
+
+scenarios:
+  - name: "Load test example.com"
+    flow:
+      - get:
+          url: "/api/User?pageNumber=1&pageSize=5"  # Đường dẫn API để lấy danh sách người dùng
+          headers:
+            Content-Type: "application/json"
+          capture:
+            - json: "$.statusCode"
+              as: "status_code"
+      - log: "Status code: {{ status_code }}"
+      - function: |
+          (context, ee, next) => {
+            if (context.vars.status_code !== 200) {
+              return next(new Error(`Expected status code 200 but got ${context.vars.status_code}`));
+            }
+            return next();
+          }
+     

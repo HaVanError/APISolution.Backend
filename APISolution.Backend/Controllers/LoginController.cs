@@ -2,7 +2,6 @@
 using APISoluton.Application.Helper;
 using APISoluton.Application.Interface.Login.IAuthentication;
 using APISoluton.Application.Interface.IUsers.Commands;
-using APISoluton.Application.ViewModel.LoginView;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.WebSockets;
 using System.Text;
+using APISoluton.Database.ViewModel.LoginView;
 
 namespace APISolution.Backend.Controllers
 {

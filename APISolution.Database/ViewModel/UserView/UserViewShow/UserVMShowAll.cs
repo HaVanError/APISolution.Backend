@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APISoluton.Application.ViewModel.UserView.UserViewShow
+namespace APISoluton.Database.ViewModel.UserView.UserViewShow
 {
     public class UserVMShowAll
     {

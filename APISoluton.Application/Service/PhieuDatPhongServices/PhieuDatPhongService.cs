@@ -2,7 +2,7 @@
 using APISolution.Database.Entity;
 using APISoluton.Application.Interface.PhieuDatPhong.Commands;
 using APISoluton.Application.Interface.PhieuDatPhong.Queries;
-using APISoluton.Application.ViewModel.PhieuDatPhongView;
+using APISoluton.Database.ViewModel.PhieuDatPhongView;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System;

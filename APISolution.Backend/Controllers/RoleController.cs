@@ -1,10 +1,14 @@
 ﻿using APISolution.Database.Entity;
-using APISoluton.Application.Interface.Role.Commands;
-using APISoluton.Application.Interface.Role.Queries;
-using APISoluton.Application.ViewModel.RoleView;
+using APISoluton.Application.Interface.IRole.Commands;
+using APISoluton.Application.Interface.IRole.Queries;
+using APISoluton.Application.Service.CacheServices;
+using APISoluton.Database.ViewModel.RoleView;
+using APISoluton.Database.ViewModel.UserView.UserViewShow;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Drawing.Printing;
 
 namespace APISolution.Backend.Controllers
 {
@@ -14,14 +18,17 @@ namespace APISolution.Backend.Controllers
     {
         private readonly IRoleCommand _role;
         private readonly IRolesQueries _roles;
-        public RoleController(IRoleCommand role, IRolesQueries roles)
+        private readonly static string key = "Role";
+        private readonly CacheServices _cache;
+        public RoleController(IRoleCommand role, IRolesQueries roles, CacheServices cache)
         {
             _role = role;
             _roles = roles;
+            _cache = cache;
         }
         [HttpPost]
       // [Authorize(Roles = "Admin")]
-        public IActionResult Add(RoleVM vn)
+        public async Task <IActionResult>Add(RoleVM vn)
         {
             try
             {
@@ -33,7 +40,7 @@ namespace APISolution.Backend.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                var addUser = _role.Add(vn);
+                var addUser = await _role.Add(vn);
                 return StatusCode(StatusCodes.Status201Created, vn);
 
             }
@@ -46,32 +53,46 @@ namespace APISolution.Backend.Controllers
         }
         [HttpGet]
        // [Authorize(Roles = "Admin")]
-        public IActionResult Get()
+        public async Task<ActionResult<Role>> Get(int pageNumber ,int pageSize)
         {
-            return Ok(_roles.GetAllRoles());
+            string keyss = $"role_{pageNumber}_{pageSize}";
+            var exit = _cache.GetList<RoleVM>(keyss);
+
+            if (exit == null)
+            {
+                var listRole = await _roles.GetAllRoless(pageNumber, pageSize);
+                return Ok(listRole);
+            }
+            else
+            {
+                return Ok(exit);
+            }
+
         }
         [HttpPut("{id:int}")]
       //  [Authorize(Roles = "Admin")]
-        public IActionResult UpdateRole(int id , RoleVM model)
+        public async Task<IActionResult> UpdateRole(int id , RoleVM model)
         {
             if (id == 0)
             {
                 return BadRequest();
             }
             else {
-                return Ok(_role.Update(model, id));
+                await _role.Update(model, id);
+                return NoContent();
             }
            
         }
         [HttpDelete]
       // [Authorize(Roles ="Admin")]
-        public IActionResult DeleteRole(int id)
+        public async Task <IActionResult> DeleteRole(int id)
         {
             if(id ==0)
             {
                 return BadRequest();
             }
-            return Ok(_role.Delete(id));
+            await _role.Delete(id);
+            return NoContent();
         }
     }
 }

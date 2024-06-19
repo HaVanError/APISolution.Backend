@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APISoluton.Application.ViewModel.PhieuDatPhongView
+namespace APISoluton.Database.ViewModel.PhieuDatPhongView
 {
     public class PhieuDatPhongVM
     {

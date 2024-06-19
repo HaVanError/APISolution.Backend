@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APISoluton.Application.ViewModel.UserView
+namespace APISoluton.Database.ViewModel.UserView
 {
     public class UserVM
     {

@@ -1,4 +1,5 @@
-﻿using APISoluton.Application.ViewModel.UserView;
+﻿
+using APISoluton.Database.ViewModel.UserView;
 using System;
 using System.Collections.Generic;
 using System.Linq;

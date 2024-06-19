@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APISoluton.Application.ViewModel.PhongView
+namespace APISoluton.Database.ViewModel.PhongView
 {
     public class PhongVM
     {

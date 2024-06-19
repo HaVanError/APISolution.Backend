@@ -1,9 +1,10 @@
 ﻿using APISolution.Database.DatabaseContext;
 using APISolution.Database.Entity;
+using APISolution.Database.Stored_Procedure;
 using APISoluton.Application.Interface.Phong.Commands;
 using APISoluton.Application.Interface.Phong.Queries;
-using APISoluton.Application.ViewModel.PhongView;
-using APISoluton.Application.ViewModel.PhongView.PhongViewShowClient;
+using APISoluton.Database.ViewModel.PhongView;
+using APISoluton.Database.ViewModel.PhongView.PhongViewShowClient;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -19,28 +20,26 @@ namespace APISoluton.Application.Service.PhongServices
     {
         private readonly DdConnect _db;
         private readonly IMapper _mapper;
-        public PhongService(DdConnect db,IMapper mapper)
+        private readonly ProcedurePhong _procedurePhong;
+        private readonly CacheServices.CacheServices _cacheServices;
+        static string _keyPhong = "phong";
+        public PhongService(DdConnect db,IMapper mapper,ProcedurePhong procedurePhong ,CacheServices.CacheServices cacheServices)
         {
             _db = db;
             _mapper = mapper;
+            _procedurePhong = procedurePhong;
+            _cacheServices = cacheServices;
         }
         public async Task<PhongVM> AddPhong(PhongVM model)
-        {
-            var map = _mapper.Map<Phong>(model);
-            var check =  await _db.Phongs.SingleOrDefaultAsync(x=>x.IdPhong == map.IdPhong);
-            if (check !=null)
-            {
-                return null;
-            }
-            else
-            {
-                _db.Phongs.Add(map);
-                await _db.SaveChangesAsync();
-                return model;
-            }  
+        { 
+                var phong = await _procedurePhong.CreatPhongStored(model);
+                 _cacheServices.Remove(_keyPhong);
+                return phong;
+            
         }
-        public  async Task<List<PhongVMShow>> GetAllPhong()
+        public  async Task<List<PhongVMShow>> GetAllPhong(int pageNumber,int pageSize)
         {
+             _keyPhong = $"phong_{pageNumber}_{pageSize}";
             var query = (from Phong in _db.Phongs
                          join LoaiPhong in _db.Loais on Phong.IdLoaiPhong equals LoaiPhong.IdLoaiPhong
                          where LoaiPhong.IdLoaiPhong == LoaiPhong.IdLoaiPhong
@@ -51,57 +50,40 @@ namespace APISoluton.Application.Service.PhongServices
                              GiaPhong = Phong.GiaPhong,
                              LoaiPhong = LoaiPhong.Name,
                              StatusPhong = Phong.StatusPhong.ToString(),
-                             
-                         });
-            return await query.ToListAsync();
+                         }).AsNoTracking().Skip((pageNumber-1)*pageNumber).Take(pageSize).ToList();
+            _cacheServices.SetList(_keyPhong, query.ToList(), TimeSpan.FromMinutes(30));
+            return   query;
         }
 
-        public async Task<PhongVMShow> GetPhongById(int id)
+        public async Task<PhongVM> GetPhongById(int id)
         {
             var check = await _db.Phongs.Where(x=>x.IdPhong==id).FirstOrDefaultAsync();
             if(check != null)
             {
-                var mapPhongVm = _mapper.Map<PhongVMShow>(check);
-                return  new PhongVMShow { 
-                    Name = mapPhongVm.Name,
-                    LoaiPhong=mapPhongVm.LoaiPhong,
-                    Describe = mapPhongVm.Describe,
-                    GiaPhong= mapPhongVm.GiaPhong,
-                    StatusPhong=check.StatusPhong.ToString(),
-                };
+             var phong =     await _procedurePhong.GetByIdPhong(id);
+             var map = _mapper.Map<PhongVM>(phong);
+                _cacheServices.Remove(_keyPhong);
+                return map;
             }
             return null;
         }
 
-        public async Task<string> RemovePhong(int id)
+        public async Task RemovePhong(int id)
         {
             var check  = await _db.Phongs.Where(x=>x.IdPhong==id).SingleOrDefaultAsync();
             if (check != null)
             {
-                _db.Phongs.Remove(check);
-                await _db.SaveChangesAsync();
-                return "Xóa thành công";
-
+               await  _procedurePhong.DeletePhong(id);
+                _cacheServices.Remove(_keyPhong);
             }
-            else
-            {
-                return "Error";
-            }
-          
         }
-
-        public async Task<string> UpdatePhong(PhongVM model, int id)
+        public async Task UpdatePhong(PhongVM model, int id)
         {
           var check = await _db.Phongs.Where(x=>x.IdPhong == id).SingleOrDefaultAsync();
             if (check != null)
             {
-                _db.Entry(check).State = EntityState.Modified;
-                await _db.SaveChangesAsync();
-                return "Thành Công";
-            }
-            else
-            {
-                return "Error";
+              await _procedurePhong.UpdatePhongStored(id, model);
+                _cacheServices.Remove(_keyPhong);
             }
 
         }

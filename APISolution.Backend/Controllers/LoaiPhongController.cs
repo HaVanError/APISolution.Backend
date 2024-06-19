@@ -1,7 +1,7 @@
-﻿using APISolution.Database.Entity;
-using APISoluton.Application.Interface.LoaiPhong.Commands;
+﻿using APISoluton.Application.Interface.LoaiPhong.Commands;
 using APISoluton.Application.Interface.LoaiPhong.Queries;
-using APISoluton.Application.ViewModel.LoaiPhongView;
+using APISoluton.Application.Service.CacheServices;
+using APISoluton.Database.ViewModel.LoaiPhongView;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,27 +13,72 @@ namespace APISolution.Backend.Controllers
     {
         private readonly ILoaiPhongCommand _loaiPhongCommand;
         private readonly ILoaiPhongQueries _loaiPhongQueries;
-        public LoaiPhongController(ILoaiPhongCommand loaiPhongCommand, ILoaiPhongQueries loaiPhongQueries)
+        private readonly CacheServices _cacheServices;
+        public LoaiPhongController(ILoaiPhongCommand loaiPhongCommand, ILoaiPhongQueries loaiPhongQueries,CacheServices cacheServices )
         {
             _loaiPhongCommand = loaiPhongCommand;
             _loaiPhongQueries = loaiPhongQueries;
+            _cacheServices = cacheServices;
         }
         [HttpPost]
-        public async Task<ActionResult<LoaiPhongVM>> AddLoai(LoaiPhongVM loaiPhong) { 
-        
-        return Ok( await _loaiPhongCommand.AddLoaiPhong(loaiPhong));
+        public async Task<ActionResult<LoaiPhongVM>> AddLoai(LoaiPhongVM loaiPhong) {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            else
+            {
+                await _loaiPhongCommand.AddLoaiPhong(loaiPhong);
+                return Created();
+            }
         }
         [HttpGet]
-        public async Task<ActionResult<List<LoaiPhongVM>>> GetPhongs()
+        public async Task<ActionResult<List<LoaiPhongVM>>> GetLoaiPhongs()
         {
-            return Ok( await _loaiPhongQueries.GetAllLoaiPhong());
+            var key = "loai";
+            var cacherbase = _cacheServices.Get<List<LoaiPhongVM>>(key);
+            if(cacherbase == null)
+            {
+                 var dsLoai = await _loaiPhongQueries.GetAllLoaiPhong();
+                return Ok(dsLoai);
+            }
+            else
+            {
+                return cacherbase;
+            }
+           
+
         }
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<LoaiPhongVM>> RemoveLoaiPhong( int id)
         {
-            var query = await _loaiPhongCommand.RemovePhong(id);
-            return Ok(query) ;
+           
+            if(id == 0)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                await _loaiPhongCommand.RemovePhong(id);
+                return NoContent();
+            }
           
+        }
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<LoaiPhongVM>> UpdateLoaiPhong(int id,LoaiPhongVM model)
+        {
+
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                await _loaiPhongCommand.UpdateLoaiPhong(model,id);
+                return NoContent();
+            }
+
         }
 
     }

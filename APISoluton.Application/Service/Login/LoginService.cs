@@ -3,7 +3,6 @@ using APISolution.Database.Entity;
 using APISoluton.Application.Helper;
 using APISoluton.Application.Interface.Login.IAuthentication;
 using APISoluton.Application.Interface.IUsers.Commands;
-using APISoluton.Application.ViewModel.LoginView;
 using Azure;
 using Azure.Core;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +18,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using APISoluton.Database.ViewModel.LoginView;
 
 namespace APISoluton.Application.Service.Login
 {
