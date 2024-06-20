@@ -1,4 +1,5 @@
-﻿using APISoluton.Application.Interface.Phong.Commands;
+﻿using APISolution.Database.ViewModel.PhongView;
+using APISoluton.Application.Interface.Phong.Commands;
 using APISoluton.Application.Interface.Phong.Queries;
 using APISoluton.Application.Service.CacheServices;
 using APISoluton.Database.ViewModel.PhongView;
@@ -23,7 +24,7 @@ namespace APISolution.Backend.Controllers
             _cache = cache;
         }
         [HttpPost]
-        public async Task<IActionResult>AddPhong(PhongVM phong)
+        public async Task<IActionResult>AddPhong(AddPhongView phong)
         {
            
             if (!ModelState.IsValid) { 

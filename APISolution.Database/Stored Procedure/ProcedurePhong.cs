@@ -1,5 +1,6 @@
 ﻿using APISolution.Database.DatabaseContext;
 using APISolution.Database.Entity;
+using APISolution.Database.ViewModel.PhongView;
 using APISoluton.Database.ViewModel.PhongView;
 using APISoluton.Database.ViewModel.RoleView;
 using Microsoft.Data.SqlClient;
@@ -25,9 +26,9 @@ namespace APISolution.Database.Stored_Procedure
             await _db.Database.ExecuteSqlInterpolatedAsync(
                $"EXEC UpdatePhong @Id={id},@Name = {model.Name},@Mota = {model.Describe},@IdLoaiPhong = {model.IdLoaiPhong},@status = {model.StatusPhong},@GiaPhong={model.GiaPhong}");
         }
-        public async Task<PhongVM> CreatPhongStored(PhongVM model)
+        public async Task<AddPhongView> CreatPhongStored(AddPhongView model)
         {
-             await _db.Database.ExecuteSqlInterpolatedAsync($"EXEC AddPhong @Name = {model.Name},@Mota = {model.Describe},@IdLoaiPhong = {model.IdLoaiPhong},@status = {model.StatusPhong},@GiaPhong={model.GiaPhong}");
+             await _db.Database.ExecuteSqlInterpolatedAsync($"EXEC AddPhong @Name = {model.Name},@Mota = {model.Description},@IdLoaiPhong = {model.IdLoaiPhong},@GiaPhong={model.Gia}");
             return model;
         }
         public async Task<Phong> GetByIdPhong(int id)

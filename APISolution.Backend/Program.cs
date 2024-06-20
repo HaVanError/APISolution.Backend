@@ -7,8 +7,6 @@ using APISoluton.Application.Interface.IUsers.Queries;
 using APISoluton.Application.Interface.LoaiPhong.Commands;
 using APISoluton.Application.Interface.LoaiPhong.Queries;
 using APISoluton.Application.Interface.Login.IAuthentication;
-using APISoluton.Application.Interface.PhieuDatPhong.Commands;
-using APISoluton.Application.Interface.PhieuDatPhong.Queries;
 using APISoluton.Application.Interface.Phong.Commands;
 using APISoluton.Application.Interface.Phong.Queries;
 using APISoluton.Application.Interface.IUsers.Commands;
@@ -34,6 +32,8 @@ using APISoluton.Application.Interface.IRole.Commands;
 using APISoluton.Application.Interface.IRole.Queries;
 using APISoluton.Application.Service.RoleServices;
 using APISoluton.Application.Service.DichVuServices;
+using APISoluton.Application.Interface.IPhieuDatPhong.Queries;
+using APISoluton.Application.Interface.IPhieuDatPhong.Commands;
 
 
 var builder = WebApplication.CreateBuilder(args);

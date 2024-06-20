@@ -1,6 +1,7 @@
 ﻿using APISolution.Database.DatabaseContext;
 using APISolution.Database.Entity;
 using APISolution.Database.Stored_Procedure;
+using APISolution.Database.ViewModel.PhongView;
 using APISoluton.Application.Interface.Phong.Commands;
 using APISoluton.Application.Interface.Phong.Queries;
 using APISoluton.Database.ViewModel.PhongView;
@@ -30,7 +31,7 @@ namespace APISoluton.Application.Service.PhongServices
             _procedurePhong = procedurePhong;
             _cacheServices = cacheServices;
         }
-        public async Task<PhongVM> AddPhong(PhongVM model)
+        public async Task<AddPhongView> AddPhong(AddPhongView model)
         { 
                 var phong = await _procedurePhong.CreatPhongStored(model);
                  _cacheServices.Remove(_keyPhong);

@@ -298,7 +298,6 @@ ALTER PROCEDURE AddPhong
 @Name nvarchar(max),
 @Mota nvarchar(max),
 @IdLoaiPhong int,
-@status bit,
 @GiaPhong float
 AS 
 BEGIN

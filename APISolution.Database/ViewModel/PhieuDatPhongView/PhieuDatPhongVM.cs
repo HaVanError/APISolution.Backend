@@ -14,8 +14,8 @@ namespace APISoluton.Database.ViewModel.PhieuDatPhongView
         public string GiaPhong { get; set; } = string.Empty;
         public string TenNguoiDat { get; set; } = string.Empty;
         public string SoDienThoai { get; set; } = string.Empty;
-        public TrangThaiPhieuDatPhong Status { get; set; }
-        
+        public string trangthai { get; set; } = string.Empty;
+
         public int IdPhong { get; set; }
       
     }

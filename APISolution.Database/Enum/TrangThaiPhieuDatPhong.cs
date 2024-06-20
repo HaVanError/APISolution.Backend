@@ -8,8 +8,11 @@ namespace APISolution.Database.Enum
 {
     public enum TrangThaiPhieuDatPhong
     {
-        successful,
+        Successful,
         Pending,
-        fail
+        Fail,
+        Pending_Pay,
+        Pay_Successful,
+        Checked_Out
     }
 }
