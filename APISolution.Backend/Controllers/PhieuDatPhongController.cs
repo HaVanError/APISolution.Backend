@@ -1,4 +1,5 @@
-﻿using APISoluton.Application.Interface.PhieuDatPhong.Commands;
+﻿using APISolution.Database.ViewModel.PhieuDatPhongView.PhieuDatPhongViewShow;
+using APISoluton.Application.Interface.PhieuDatPhong.Commands;
 using APISoluton.Application.Interface.PhieuDatPhong.Queries;
 using APISoluton.Database.ViewModel.PhieuDatPhongView;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +19,7 @@ namespace APISolution.Backend.Controllers
             _queries = queries;
         }
         [HttpPost]
-        public async Task<IActionResult> DatPhong(PhieuDatPhongVM model)
+        public async Task<IActionResult> DatPhong([FromForm] AddPhieuDatPhongView model)
         {
             if (!ModelState.IsValid)
             {
@@ -30,9 +31,9 @@ namespace APISolution.Backend.Controllers
             }
         }
         [HttpGet]
-        public  async Task<IActionResult> GetAllPhieuDatPhong()
+        public  async Task<IActionResult> GetAllPhieuDatPhong(int pageNumber, int pageSize)
         {
-            return Ok(await _queries.GetAllPhieuDatPhong());
+            return Ok(await _queries.GetAllPhieuDatPhong( pageNumber,  pageSize));
         }
     }
 }

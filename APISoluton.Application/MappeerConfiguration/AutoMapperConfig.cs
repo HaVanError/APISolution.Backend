@@ -1,4 +1,5 @@
 ﻿using APISolution.Database.Entity;
+using APISolution.Database.ViewModel.PhieuDatPhongView.PhieuDatPhongViewShow;
 using APISoluton.Database.ViewModel.DichVuView;
 using APISoluton.Database.ViewModel.LoaiPhongView;
 using APISoluton.Database.ViewModel.PhieuDatPhongView;
@@ -34,6 +35,8 @@ namespace APISoluton.Application.MappeerConfiguration
             CreateMap<LoaiPhongVM, LoaiPhong>();
             CreateMap<PhieuDatPhong, PhieuDatPhongVM>();
             CreateMap<PhieuDatPhongVM, PhieuDatPhong>();
+            CreateMap<PhieuDatPhong, AddPhieuDatPhongView>();
+            CreateMap<AddPhieuDatPhongView, PhieuDatPhong>();
             CreateMap<DichVuVM, DichVu>();
             CreateMap<DichVu, DichVuVM>();
         }

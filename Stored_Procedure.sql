@@ -314,7 +314,7 @@ SET NOCOUNT ON ;
 	ELSE 
 	BEGIN 
 	INSERT INTO dbo.PHONG (Name,Describe,IdLoaiPhong,StatusPhong,GiaPhong)
-	VALUES (@Name,@Mota,@IdLoaiPhong,@status,@GiaPhong)
+	VALUES (@Name,@Mota,@IdLoaiPhong,0,@GiaPhong)
 	End
 END
 

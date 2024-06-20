@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APISolution.Database.Migrations
 {
     [DbContext(typeof(DdConnect))]
-    [Migration("20240613043817_One")]
+    [Migration("20240620085642_One")]
     partial class One
     {
         /// <inheritdoc />

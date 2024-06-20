@@ -62,18 +62,7 @@ namespace APISoluton.Application.Service.DichVuServices
 
         public async Task<DichVuVM> GetByIdDichVu(int id)
         {
-            //var check = await _db.DichVus.SingleOrDefaultAsync(x => x.IdDichVu == id);
-            //if (check != null)
-            //{
-            //  var dichVu=  await _procedureDichVu.GetByIdDichVu(id);
-            //    var map = _mapper.Map<DichVuVM>(dichVu);
-            //    _cacheServices.Remove(_keyDichVu);
-            //    return map;
-            //}
-            //else
-            //{
-            //    throw new NotImplementedException();
-            //}
+           
             var dichVu = await _procedureDichVu.GetByIdDichVu(id);
                var map = _mapper.Map<DichVuVM>(dichVu);
             return map;

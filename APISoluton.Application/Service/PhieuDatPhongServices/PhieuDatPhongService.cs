@@ -1,5 +1,7 @@
 ﻿using APISolution.Database.DatabaseContext;
 using APISolution.Database.Entity;
+using APISolution.Database.Enum;
+using APISolution.Database.ViewModel.PhieuDatPhongView.PhieuDatPhongViewShow;
 using APISoluton.Application.Interface.PhieuDatPhong.Commands;
 using APISoluton.Application.Interface.PhieuDatPhong.Queries;
 using APISoluton.Database.ViewModel.PhieuDatPhongView;
@@ -23,32 +25,44 @@ namespace APISoluton.Application.Service.PhieuDatPhongServices
             _mapper = mapper;
         }
 
-        public async Task<PhieuDatPhongVM> DatPhong(PhieuDatPhongVM mode)
+        public async Task<PhieuDatPhongVM> DatPhong(AddPhieuDatPhongView mode)
         {
             var map = _mapper.Map<PhieuDatPhong>(mode);
-            var check = await _db.PhieuDatPhongs.SingleOrDefaultAsync(x=>x.IdPhieuDatPhong == map.IdPhieuDatPhong);
+            var check = await _db.PhieuDatPhongs.FirstOrDefaultAsync(x => x.IdPhieuDatPhong == map.IdPhieuDatPhong);
+
             if (check != null)
             {
                 return null;
             }
-            else
-            {
-                _db.PhieuDatPhongs.Add(map);
-                await _db.SaveChangesAsync();
-                return new PhieuDatPhongVM
+            var checkphong = await _db.Phongs.FirstOrDefaultAsync(x => x.IdPhong == map.IdPhong);
+            if (checkphong != null && checkphong.StatusPhong ==StatusPhong.Empty)
                 {
-                    IdPhong = map.IdPhong,
-                    TenPhong = map.TenPhong,
-                    TenNguoiDat = map.TenNguoiDat,
-                    SoDienThoai = map.SoDienThoai,
-                    GiaPhong = map.GiaPhong,
-                    Status = map.Status,
-                };
 
-            }
+                    var phieuDat = new PhieuDatPhong();
+                    phieuDat.TenPhong = checkphong.Name;
+                    phieuDat.IdPhong = checkphong.IdPhong;
+                    phieuDat.TenNguoiDat = map.TenNguoiDat;
+                    phieuDat.Status = APISolution.Database.Enum.TrangThaiPhieuDatPhong.Pending;
+                    phieuDat.GiaPhong = checkphong.GiaPhong.ToString();
+                    phieuDat.SoDienThoai = map.SoDienThoai;
+                    checkphong.StatusPhong = StatusPhong.NotEmpty;
+                    _db.PhieuDatPhongs.Add(phieuDat);
+                    _db.Entry(checkphong).State =EntityState.Modified;
+                    await _db.SaveChangesAsync();
+                
+                    return new PhieuDatPhongVM
+                    {
+                        IdPhong = checkphong.IdPhong,
+                        TenPhong = checkphong.Name,
+                        TenNguoiDat = phieuDat.TenNguoiDat,
+                        SoDienThoai = phieuDat.SoDienThoai,
+                        GiaPhong = checkphong.GiaPhong.ToString(),
+                        Status = phieuDat.Status
+                    };
+                }
+                return null;
         }
-
-        public async Task<List<PhieuDatPhongVM>> GetAllPhieuDatPhong()
+        public async Task<List<PhieuDatPhongVM>> GetAllPhieuDatPhong(int pageNumber, int pageSize)
         {
             var query = (from PhieuDatPhong in _db.PhieuDatPhongs
                          join Phong in _db.Phongs on PhieuDatPhong.IdPhong equals Phong.IdPhong
@@ -60,14 +74,20 @@ namespace APISoluton.Application.Service.PhieuDatPhongServices
                              SoDienThoai = PhieuDatPhong.TenNguoiDat,
                              GiaPhong = Phong.GiaPhong.ToString(),
                              Status = PhieuDatPhong.Status,
-                         }
-                         );
+                         }).Skip((pageNumber-1)*pageSize).Take(pageSize);
             return await  query.ToListAsync();
         }
-
-        public Task<PhieuDatPhongVM> GetByIdPhieuDatPhong(int id)
+        public async Task<PhieuDatPhongVM> GetByIdPhieuDatPhong(int id)
         {
-            throw new NotImplementedException();
+            var check =  await _db.PhieuDatPhongs.FindAsync(id);
+            if (check != null)
+            {
+                var map = _mapper.Map<PhieuDatPhongVM>(check);
+                return map;
+            }
+            else { 
+            return null;
+            }
         }
     }
 }

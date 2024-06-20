@@ -9,7 +9,7 @@ namespace APISoluton.Application.Interface.PhieuDatPhong.Queries
 {
     public interface IPhieuDatPhongQueries
     {
-        Task<List<PhieuDatPhongVM>> GetAllPhieuDatPhong();
+        Task<List<PhieuDatPhongVM>> GetAllPhieuDatPhong(int pageNumber ,int pageSize);
         Task<PhieuDatPhongVM> GetByIdPhieuDatPhong(int id);
 
     }

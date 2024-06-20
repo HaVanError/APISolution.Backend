@@ -11,7 +11,6 @@ namespace APISolution.Database.Entity
     public class PhieuDatPhong
     {
         public int IdPhieuDatPhong {  get; set; }
-   
         public string TenPhong {  get; set; } = string.Empty;
         public string GiaPhong {  get; set; } = string.Empty;
         public string TenNguoiDat {  get; set; } = string.Empty;

@@ -9,7 +9,7 @@ namespace APISolution.Database.Enum
     public enum TrangThaiPhieuDatPhong
     {
         successful,
-       Pending,
+        Pending,
         fail
     }
 }
