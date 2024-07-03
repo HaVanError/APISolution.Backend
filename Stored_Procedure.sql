@@ -8,7 +8,7 @@ ALTER  PROCEDURE AddUser
     @Address NVARCHAR(max),
     @City NVARCHAR(max),
     @IdRole INT
-AS
+as
 BEGIN
  SET NOCOUNT ON;
 	DECLARE @soluongName int ;
