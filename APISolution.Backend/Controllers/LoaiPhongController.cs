@@ -1,5 +1,6 @@
-﻿using APISoluton.Application.Interface.LoaiPhong.Commands;
-using APISoluton.Application.Interface.LoaiPhong.Queries;
+﻿
+using APISoluton.Application.Interface.ILoaiPhong.Commands;
+using APISoluton.Application.Interface.ILoaiPhong.Queries;
 using APISoluton.Application.Service.CacheServices;
 using APISoluton.Database.ViewModel.LoaiPhongView;
 using Microsoft.AspNetCore.Http;

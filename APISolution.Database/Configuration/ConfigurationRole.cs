@@ -18,7 +18,10 @@ namespace APISolution.Database.Configuration
             builder.HasIndex(x=> new {x.IdRole,x.NameRole});
             builder.Property(x => x.NameRole).IsRequired();
             builder.Property(x => x.MoTa).IsRequired();
-            
+            builder.HasData(
+                new Role {IdRole=1, NameRole = "Admin", MoTa = "Người quản trị hệ thống" },
+                new Role { IdRole=2, NameRole = "User", MoTa = "Người dùng hệ thống" }
+                );
         }
     }
 }

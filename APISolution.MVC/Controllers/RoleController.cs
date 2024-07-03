@@ -1,0 +1,13 @@
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace APISolution.MVC.Controllers
+{
+    public class RoleController : Controller
+    {
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+    }
+}

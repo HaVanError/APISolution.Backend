@@ -17,7 +17,12 @@ namespace APISolution.Database.Configuration
             builder.ToTable("LoaiPhong");
             builder.HasKey(x => x.IdLoaiPhong);
             builder.HasIndex(x => new { x.Name, x.IdLoaiPhong }).IsUnique();
-            
+
+
+            builder.HasData(
+                 new LoaiPhong { IdLoaiPhong =1,MoTa="Loại phòng VIP",Name="Vip"},
+                 new LoaiPhong { IdLoaiPhong = 2, MoTa = "Loại phòng Thường", Name = "Thường" }
+                );
         }
     }
 }

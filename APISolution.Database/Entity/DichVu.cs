@@ -13,6 +13,7 @@ namespace APISolution.Database.Entity
         public int SoLuong {  get; set; }  
         public float Gia { get; set; }
         public List<PhieuDichVu> ?PhieuDichVus { get; set; }
+       
 
 
     }

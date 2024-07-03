@@ -11,7 +11,7 @@ namespace APISoluton.Application.Interface.IPhieuDatPhong.Commands
 {
     public interface IPhieuDatPhongCommand
     {
-        Task<PhieuDatPhongVM>DatPhong(AddPhieuDatPhongView mode);
+        Task<AddPhieuDatPhongView> DatPhong(AddPhieuDatPhongView mode);
         Task DuyetDatPhong(int idPhieuDatPhong);
         Task TraDatPhong(int idPhieuDatPhong);
     }

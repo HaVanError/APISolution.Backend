@@ -12,8 +12,8 @@ namespace APISoluton.Database.ViewModel.PhongView.PhongViewShowClient
     {
         public string Name { get; set; } = string.Empty;
         public string Describe { get; set; } = string.Empty;
-        public string StatusPhong { get; set; }
-        public string LoaiPhong { get;  set; }
+        public string StatusPhong { get; set; } = string.Empty;
+        public string LoaiPhong { get;  set; } = string.Empty;
         public float GiaPhong { get; set; }
     }
 }

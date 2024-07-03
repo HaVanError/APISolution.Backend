@@ -1,8 +1,8 @@
 ﻿using APISolution.Database.DatabaseContext;
 using APISolution.Database.Entity;
 using APISolution.Database.Stored_Procedure;
-using APISoluton.Application.Interface.LoaiPhong.Commands;
-using APISoluton.Application.Interface.LoaiPhong.Queries;
+using APISoluton.Application.Interface.ILoaiPhong.Commands;
+using APISoluton.Application.Interface.ILoaiPhong.Queries;
 using APISoluton.Database.ViewModel.LoaiPhongView;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;

@@ -18,12 +18,10 @@ namespace APISolution.Database.Configuration
             builder.ToTable("PhieuDatDichVu");
             builder.HasKey(x=>x.IdPhieuDichVu);
             builder.HasIndex(x => new { x.TenDichVu, x.IdPhieuDichVu });
-           builder.HasOne(x=>x.Phong).WithMany(x=>x.PhieuDichVus).HasForeignKey(x=>x.IdPhong)
-                .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.DichVu).WithMany(x => x.PhieuDichVus).HasForeignKey(x => x.IdDichVu)
                 .OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(x=>x.PhieuDatPhong).WithMany(x=>x.PhieuDichVus).HasForeignKey(x=>x.IdPhieuDatPhong)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.PhieuDatPhong).WithMany(x => x.PhieuDichVus).HasForeignKey(x => x.IdPhieuDatPhong)
+               .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

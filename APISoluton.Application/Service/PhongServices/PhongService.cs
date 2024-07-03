@@ -2,8 +2,8 @@
 using APISolution.Database.Entity;
 using APISolution.Database.Stored_Procedure;
 using APISolution.Database.ViewModel.PhongView;
-using APISoluton.Application.Interface.Phong.Commands;
-using APISoluton.Application.Interface.Phong.Queries;
+using APISoluton.Application.Interface.IPhong.Commands;
+using APISoluton.Application.Interface.IPhong.Queries;
 using APISoluton.Database.ViewModel.PhongView;
 using APISoluton.Database.ViewModel.PhongView.PhongViewShowClient;
 using AutoMapper;

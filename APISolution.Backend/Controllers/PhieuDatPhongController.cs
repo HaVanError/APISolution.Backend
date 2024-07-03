@@ -42,7 +42,7 @@ namespace APISolution.Backend.Controllers
         [HttpGet("getbyall")]
         public async Task<IActionResult> GetByAllPhieuDatPhong([FromQuery]ViewSeach model)
         {
-         //  await _queries.GetByAllPhieuDatPhong(model);
+        
          return Ok(await _queries.GetByAllPhieuDatPhong(model));
         }
         [HttpPut("duyetdatphong/{idPhieuDat}")]

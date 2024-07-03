@@ -1,6 +1,6 @@
 ﻿using APISolution.Database.ViewModel.PhongView;
-using APISoluton.Application.Interface.Phong.Commands;
-using APISoluton.Application.Interface.Phong.Queries;
+using APISoluton.Application.Interface.IPhong.Commands;
+using APISoluton.Application.Interface.IPhong.Queries;
 using APISoluton.Application.Service.CacheServices;
 using APISoluton.Database.ViewModel.PhongView;
 using APISoluton.Database.ViewModel.PhongView.PhongViewShowClient;

@@ -1,18 +1,11 @@
 ﻿using APISolution.Database.DatabaseContext;
 using APISolution.Database.Entity;
 using APISoluton.Application.Helper;
-using APISoluton.Application.Interface.DichVu.Commands;
-using APISoluton.Application.Interface.DichVu.Queries;
 using APISoluton.Application.Interface.IUsers.Queries;
-using APISoluton.Application.Interface.LoaiPhong.Commands;
-using APISoluton.Application.Interface.LoaiPhong.Queries;
 using APISoluton.Application.Interface.Login.IAuthentication;
-using APISoluton.Application.Interface.Phong.Commands;
-using APISoluton.Application.Interface.Phong.Queries;
 using APISoluton.Application.Interface.IUsers.Commands;
 using APISoluton.Application.MappeerConfiguration;
 using APISoluton.Application.Service.CacheServices;
-
 using APISoluton.Application.Service.LoaiPhongServices;
 using APISoluton.Application.Service.Login;
 using APISoluton.Application.Service.PhieuDatPhongServices;
@@ -34,6 +27,19 @@ using APISoluton.Application.Service.RoleServices;
 using APISoluton.Application.Service.DichVuServices;
 using APISoluton.Application.Interface.IPhieuDatPhong.Queries;
 using APISoluton.Application.Interface.IPhieuDatPhong.Commands;
+using APISoluton.Application.Interface.IPhieuDatDichVu.Commands;
+using APISoluton.Application.Interface.IPhieuDatDichVu.Queries;
+using APISoluton.Application.Service.PhieuDatDichVuServices;
+using Microsoft.Extensions.Options;
+using APISoluton.Application.Interface.IDichVu.Commands;
+using APISoluton.Application.Interface.IDichVu.Queries;
+using APISoluton.Application.Interface.IPhong.Commands;
+using APISoluton.Application.Interface.IPhong.Queries;
+using APISoluton.Application.Interface.ILoaiPhong.Queries;
+using APISoluton.Application.Interface.ILoaiPhong.Commands;
+using APISoluton.Application.Interface.IThanhToan.Commands;
+using APISoluton.Application.Service.ThanhToanServices;
+using APISoluton.Application.Interface.IThanhToan.Queries;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -70,6 +76,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false
         };
     });
+//builder.Services.AddDbContext<DdConnect>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("db")));
 builder.Services.AddDbContext<DdConnect>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("db")));
 #region Add DI SERVICE
 builder.Services.AddScoped<IUserCommaind, UserService>();
@@ -85,6 +92,10 @@ builder.Services.AddScoped<IPhieuDatPhongQueries, PhieuDatPhongService>();
 builder.Services.AddScoped<IPhieuDatPhongCommand, PhieuDatPhongService>();
 builder.Services.AddScoped<IDichVuCommand, DichVuService>();
 builder.Services.AddScoped<IDichVuQueries, DichVuService>();
+builder.Services.AddScoped<IPhieuDatDichVuCommand, PhieuDatDichVuService>();
+builder.Services.AddScoped<IPhieuDatDichVuQueries, PhieuDatDichVuService>();
+builder.Services.AddScoped<IThanhToanCommand, ThanhToanService>();
+builder.Services.AddScoped<IThanhToanQueries, ThanhToanService>();
 //Cache
 builder.Services.AddMemoryCache(); // thêm cache 
 builder.Services.AddSingleton<CacheServices>();
@@ -93,10 +104,15 @@ builder.Services.AddScoped<ProcedurePhong>();
 builder.Services.AddScoped<ProcedureLoaiPhong>();
 builder.Services.AddScoped<ProcedureDichVu>();
 builder.Services.AddScoped<ProcedureRole>();
+builder.Services.AddScoped<ProcedurePhieuDatDichVu>();
+builder.Services.AddScoped<ProcedurePhieuDatPhong>();
+builder.Services.AddScoped<ProcedureThanhToan>();
+
 #endregion
 builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 
 builder.Services.Configure<Appsetting>(builder.Configuration.GetSection("Jwt:Secret"));
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("api",

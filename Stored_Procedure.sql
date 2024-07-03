@@ -1,8 +1,5 @@
-﻿Use SolutitonAPIDB -- DATABASE 
+﻿Use SolutitonAPIDB
 GO
-
----DANH SÁCH CÁC STORED PROCEDURE CRUD 
-
 --CRUD CHO USER
 ALTER  PROCEDURE AddUser
     @Email NVARCHAR(max),
@@ -13,7 +10,6 @@ ALTER  PROCEDURE AddUser
     @IdRole INT
 AS
 BEGIN
-   -- SET NOCOUNT off; -- Ngăn SQL Server trả về số hàng bị ảnh hưởng
  SET NOCOUNT ON;
 	DECLARE @soluongName int ;
 		DECLARE @soluongEmail int ;
@@ -69,7 +65,6 @@ BEGIN
     DELETE FROM UserInformation
     WHERE Id = @Id;
     
- --   SELECT @@ROWCOUNT AS RowsAffected; -- Trả về số lượng bản ghi bị xóa
 END
 go 
 CREATE PROCEDURE GetUserByName
@@ -119,57 +114,7 @@ BEGIN
 END
 
 GO
-ALTER TRIGGER trg_UserInformation_AfterInsertUpdateDelete
-ON dbo.UserInformation
-AFTER INSERT, UPDATE, DELETE
-AS
-BEGIN
-  --  SET NOCOUNT ON;
 
-    DECLARE @ActionType VARCHAR(10);
-
-    IF EXISTS (SELECT * FROM inserted)
-    BEGIN
-        IF EXISTS (SELECT * FROM deleted)
-            SET @ActionType = 'Update';
-        ELSE
-            SET @ActionType = 'AddUser';
-
-        -- Thực hiện stored procedure InsertUser khi có sự thêm mới
-        IF @ActionType = 'AddUser'
-        BEGIN
-		DECLARE @Email NVARCHAR(max);
-		DECLARE @Password NVARCHAR(max);
-		DECLARE	@Name nvarchar(450);
-		DECLARE @Address NVARCHAR(max);
-		DECLARE @City NVARCHAR(max);
-		DECLARE @IdRole INT
-          SELECT @Name =Name, @Email = Email,@Password = Password , @Address = Address , @City =City ,@IdRole = IdRole FROM inserted;
-       --  EXEC AddUser @Name, @Email,@Password,@Address,@City,@IdRole From inserted;
-		    PRINT N'Đã thực hiện thêm mới vào bảng UserInformation.';
-        END;
-    END
-    ELSE IF EXISTS (SELECT * FROM deleted)
-    BEGIN
-        SET @ActionType = 'DeleteUser';
-
-        -- Thực hiện stored procedure DeleteUser khi có sự xóa
-        DECLARE @UserId INT;
-        SELECT @UserId = Id FROM deleted;
-
-        EXEC DeleteUser @UserId;
-		PRINT N'Đã thực hiện Delete vào bảng UserInformation.';  
-    END
-   ELSE 
-    BEGIN
-	Set @ActionType = 'UpdateUser';
-        -- Thực hiện cập nhật
-		 DECLARE @Id INT;
-		   SELECT @Id=Id, @Name =Name, @Email = Email,@Password = Password , @Address = Address , @City =City ,@IdRole = IdRole FROM deleted;
-
-		PRINT N'Đã thực hiện update vào bảng UserInformation.';
-    END;
-END;
 
 GO
 --STORED PROCEDURE CRUD QUYÊN
@@ -232,8 +177,8 @@ BEGIN
 END
 go
 --CRUD CHO LOAI PHONG 
- exec GetAllQuyen 1,100
- go
+ 
+
 ALTER PROCEDURE AddLoaiPhong	
 @Name nvarchar(max),
 @Mota  nvarchar(max)
@@ -249,7 +194,6 @@ SET NOCOUNT ON ;
 	   RAISERROR ('Tên đã tồn tại. Không thể chèn dữ liệu.', 16, 1);
     END
 	else
-
 	INSERT INTO dbo.LoaiPhong (Name , MoTa)
 		Values (@Name,@Mota)
 END 
@@ -292,7 +236,6 @@ BEGIN
 END
 Go
 --- CRUD CHO PHONG 
-select * from Phong
 GO
 ALTER PROCEDURE AddPhong
 @Name nvarchar(max),
@@ -393,20 +336,9 @@ SET NOCOUNT ON ;
 DELETE dbo.Phong WHERE IdPhong= @Id
 END
 GO
-Alter VIEW GHEP_PHONG_LOAI as 
-SELECT  
-U.IdPhong,
-U.Name,
-U.Describe,
-U.GiaPhong,
-U.StatusPhong,
-U.IdLoaiPhong,
-Q.Name as tenPhong,
-Q.MoTa
-FROM dbo.Phong AS U 
-JOIN dbo.LoaiPhong AS Q  ON U.IdLoaiPhong = Q.IdLoaiPhong
 
-go
+
+
  -- CRUD CHO DICH VU 
  CREATE PROCEDURE AddDichVu
  @NameDichVu nvarchar(max),
@@ -427,7 +359,7 @@ go
 		BEGIN 
 		INSERT INTO dbo.DichVu (NameDichVu,SoLuong,Gia)
 		Values (@NameDichVu, @SoLuong, @Gia)
-		
+
 		End
  END
  Go 
@@ -445,7 +377,6 @@ go
 		Gia = @Gia 
 		WHERE IdDichVu = @Id
  END
-
  GO
  CREATE PROCEDURE DeleteDichVu
  @Id int 
@@ -460,14 +391,319 @@ go
  BEGIN
 		SELECT D.IdDichVu, D.NameDichVu , D.SoLuong,D.Gia FROM DichVu AS D WHERE IdDichVu = @Id
  END 
-
 GO
  --CRUD CHO PHIEUDATPHONG
  
- Go
- select * from PhieuDatDichVu
+ALTER PROCEDURE AddPhieuDatDichVu
+    @NameDichVu NVARCHAR(MAX),
+    @idDichVu INT,
+    @idPhieuDatPhong INT,
+    @SoLuong INT,
+    @NgayDatDichVu DATE 
+AS
+BEGIN
+    SET NOCOUNT ON; 
 
+    -- Kiểm tra sự tồn tại của PhieuDatPhong và DichVu
+    IF Not EXISTS (SELECT 1 FROM PhieuDatPhong WHERE IdPhieuDatPhong = @idPhieuDatPhong)
+    BEGIN
+        PRINT N'Không tồn tại khách hàng tại phòng đã đặt';
+        RETURN;
+    END
+
+    IF NOT EXISTS (SELECT 1 FROM DichVu WHERE IdDichVu = @idDichVu)
+    BEGIN
+        PRINT N'Không tồn tại ID dịch vụ';
+        RETURN;
+    END
+
+    -- Bắt đầu transaction để đảm bảo tính nhất quán và toàn vẹn dữ liệu
+    BEGIN TRANSACTION;
+
+    DECLARE @SoLuongConLai INT;
+    DECLARE @NgayDatDichVuConverted DATETIME;
+
+    -- Chuyển đổi @NgayDatDichVu từ chuỗi sang kiểu ngày tháng
+    SET @NgayDatDichVuConverted = CONVERT(DATETIME, @NgayDatDichVu, 103); -- 103 là định dạng dd/MM/yyyy
+
+    -- Lấy số lượng hiện tại của dịch vụ
+    SELECT @SoLuongConLai = SoLuong
+    FROM DichVu
+    WHERE IdDichVu = @idDichVu;
+
+    -- Kiểm tra xem có đủ số lượng để giảm không
+    IF @SoLuongConLai >= @SoLuong
+    BEGIN
+        -- Chèn dữ liệu vào PhieuDatDichVu
+        INSERT INTO PhieuDatDichVu (TenPhong, TenKhachHang, SoLuong, TenDichVu, IdDichVu, IdPhieuDatPhong, Gia, ThanhTien, PhongIdPhong, NgayDatDichVu)
+        SELECT 
+            pp.TenPhong,
+            pp.TenNguoiDat,
+            @SoLuong,
+            @NameDichVu,
+            @idDichVu,
+            @idPhieuDatPhong,
+            dv.Gia,
+            (dv.Gia * @SoLuong) AS ThanhTien, -- Tính ThanhTien
+            pp.IdPhong,
+            @NgayDatDichVuConverted
+        FROM 
+            PhieuDatPhong AS pp
+         JOIN 
+            DichVu AS dv ON dv.IdDichVu = @idDichVu
+        WHERE 
+            pp.IdPhieuDatPhong = @idPhieuDatPhong;
+			
+        UPDATE DichVu
+        SET SoLuong = SoLuong - @SoLuong
+        WHERE IdDichVu = @idDichVu;
+
+        -- Commit transaction nếu thành công
+        COMMIT TRANSACTION;
+    END
+    ELSE
+    BEGIN
+        -- Rollback transaction nếu không đủ số lượng
+        ROLLBACK TRANSACTION;
+        PRINT N'Không đủ số lượng dịch vụ để đáp ứng yêu cầu';
+    END
+END;
+GO
+
+
+ALTER PROCEDURE DeletePhieuDatDichVu
+    @id int
+AS
+BEGIN
+    DELETE PhieuDatDichVu WHERE IdPhieuDichVu  = @id
+END;
+
+GO
+CREATE PROCEDURE UpdatePhieuDatDichVu
+    @idPhieuDatDichVu INT,
+    @NameDichVu NVARCHAR(MAX),
+    @idDichVu INT,
+    @idPhieuDatPhong INT,
+    @SoLuong INT
+AS
+BEGIN
+    DECLARE @OldSoLuong INT;
+    DECLARE @OldIdDichVu INT;
+    
+    -- Bắt đầu transaction
+    BEGIN TRANSACTION;
+    
+    -- Lấy thông tin cũ từ phiếu đặt dịch vụ
+    SELECT @OldSoLuong = SoLuong, @OldIdDichVu = IdDichVu
+    FROM PhieuDatDichVu
+    WHERE IdPhieuDichVu = @idPhieuDatDichVu;
+    
+    -- Kiểm tra nếu phiếu đặt dịch vụ tồn tại
+    IF @OldSoLuong IS NOT NULL AND @OldIdDichVu IS NOT NULL
+    BEGIN
+        -- Tăng số lượng dịch vụ cũ trong bảng DichVu
+        UPDATE DichVu
+        SET SoLuong = SoLuong + @OldSoLuong
+        WHERE IdDichVu = @OldIdDichVu;
+
+        -- Cập nhật phiếu đặt dịch vụ
+        UPDATE PhieuDatDichVu
+        SET TenDichVu = @NameDichVu,
+            IdDichVu = @idDichVu,
+            IdPhieuDatPhong = @idPhieuDatPhong,
+            SoLuong = @SoLuong
+        WHERE IdPhieuDichVu = @idPhieuDatDichVu;
+
+        -- Giảm số lượng dịch vụ mới trong bảng DichVu
+        UPDATE DichVu
+        SET SoLuong = SoLuong - @SoLuong
+        WHERE IdDichVu = @idDichVu;
+        
+        -- Commit transaction nếu thành công
+        COMMIT TRANSACTION;
+    END
+    ELSE
+    BEGIN
+        -- Rollback transaction nếu không tìm thấy phiếu đặt dịch vụ
+        ROLLBACK TRANSACTION;
+        PRINT N'Không tìm thấy phiếu đặt dịch vụ để cập nhật';
+    END
+END;
+
+
+
+ select * from PhieuDatDichVu
+  select * from DichVu
+    select * from PhieuDatPhong
+ --EXEC DeletePhieuDatDichVu 3
  go
+
+
+ --CRUD PHIEUDATPHONG
+ALTER PROCEDURE [dbo].[AddPhieuDatPhong]
+    @TenNguoiDat nvarchar(max),
+    @SDT nvarchar(max),
+    @IdPhong int,
+    @NgayDatPhong Date -- Định dạng dd/MM/yyyy
+AS
+BEGIN
+    SET NOCOUNT ON; -- Ngăn không trả về số bản ghi ảnh hưởng
+
+    -- Kiểm tra nếu phòng không tồn tại hoặc đang có trạng thái là 1
+    IF not EXISTS (
+        SELECT 
+		1
+        FROM Phong
+        WHERE IdPhong = @IdPhong
+    )
+    BEGIN
+        PRINT N'Không tồn tại phòng hoặc phòng đã có người đặt.';
+        RETURN;
+    END
+
+    -- Bắt đầu transaction để đảm bảo tính nhất quán và toàn vẹn dữ liệu
+    BEGIN TRANSACTION;
+
+    -- Chuyển đổi @NgayDatPhong từ chuỗi sang kiểu ngày tháng
+    DECLARE @NgayDatPhongConverted datetime;
+    SET @NgayDatPhongConverted = CONVERT(datetime, @NgayDatPhong, 103); -- 103 là định dạng dd/MM/yyyy
+
+    INSERT INTO PhieuDatPhong (TenPhong, GiaPhong, TenNguoiDat, SoDienThoai, Status, IdPhong, NgayDatPhong)
+    SELECT 
+        p.Name,
+        p.GiaPhong,
+        @TenNguoiDat,
+        @SDT,
+        1, -- Status = 1
+        @IdPhong,
+        @NgayDatPhongConverted
+    FROM 
+        Phong AS p
+    WHERE 
+        p.IdPhong = @IdPhong;
+
+    COMMIT TRANSACTION;
+
+    PRINT N'Đã thêm phiếu đặt phòng thành công.';
+END
+exec AddPhieuDatPhong  N'Nguyen van b','92312',1
+
+
+
+go
+ALTER PROCEDURE AddThanhToan 
+@IdPhieuDatPhong int,
+@NgayTraPhong DATE 
+AS
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM ThanhToan 
+        WHERE idPhieuDatPhong = @IdPhieuDatPhong
+    )
+    BEGIN 
+        PRINT N'KHÔNG THỂ THANH TOÁN LỖI';
+    END
+    ELSE
+    BEGIN
+        -- Bắt đầu transaction để đảm bảo tính nhất quán và toàn vẹn dữ liệu
+        BEGIN TRANSACTION;
+
+        -- Khai báo biến
+        DECLARE @NgayNhanPhong DATE;
+        DECLARE @TongThanhTien MONEY;
+        DECLARE @SoNgayO INT;
+
+        -- Lấy thông tin ngày nhận phòng từ bảng PhieuDatPhong
+        SELECT @NgayNhanPhong = p.NgayDatPhong
+        FROM PhieuDatPhong as p
+        WHERE idphieudatphong = @IdPhieuDatPhong;
+
+		  SET @SoNgayO = DATEDIFF(DAY, @NgayNhanPhong, @NgayTraPhong);
+        -- Tính tổng thành tiền
+        SELECT 
+            @TongThanhTien = ((P.GiaPhong*@SoNgayO) + ISNULL(SUM(D.SoLuong * D.Gia), 0)) 
+        FROM 
+            PhieuDatPhong AS P
+            JOIN PhieuDatDichVu AS D ON P.IdPhong = D.PhongIdPhong
+        WHERE 
+            P.idphieudatphong = @IdPhieuDatPhong
+        GROUP BY 
+            P.GiaPhong;
+        -- Insert vào bảng ThanhToan
+        INSERT INTO ThanhToan (TenPhong, TenKhachHang, TongThanhTien, idPhieuDatPhong, TrangThaiThanhToan, NgayThanhToan, NgayTraPhong)
+        SELECT 
+            P.TenPhong,
+            P.TenNguoiDat AS TenKhachHang,
+            @TongThanhTien AS TongThanhTien,
+            P.IdPhieuDatPhong,
+            2,
+            GETDATE() AS NgayThanhToan, -- Ngày hiện tại là ngày thanh toán
+			@NgayTraPhong
+        FROM 
+            PhieuDatPhong AS P
+        WHERE 
+            P.idphieudatphong = @IdPhieuDatPhong;
+
+        COMMIT TRANSACTION;
+    END
+END;
+go
+ALTER PROCEDURE [dbo].[DuyetThanhToan]
+    @IdThanhToan int 
+AS 
+BEGIN 
+    IF EXISTS (
+        SELECT IdThanhToan
+        FROM ThanhToan 
+        WHERE IdThanhToan = @IdThanhToan
+    )
+    BEGIN
+        UPDATE ThanhToan 
+        SET TrangThaiThanhToan = 1
+        WHERE IdThanhToan = @IdThanhToan;
+        
+        PRINT N'Đã duyệt thanh toán thành công.';
+		Update Phong 
+		set 
+		StatusPhong = 0
+		where Phong.Name = (SELECT TenPhong FROM ThanhToan WHERE IdThanhToan = @IdThanhToan);
+		  PRINT N'Đã cập nhật trạng thái của phòng thành công.';
+		DELETE FROM PhieuDatDichVu 
+        WHERE IdPhieuDatPhong = (select IdPhieuDatPhong FROM ThanhToan WHERE IdThanhToan = @IdThanhToan); 
+		 PRINT N'Đã xóa PHIEU DICH VU thành công.';
+		 DELETE FROM PhieuDatPhong  
+		WHERE PhieuDatPhong.IdPhieuDatPhong = (SELECT IdPhieuDatPhong FROM ThanhToan WHERE IdThanhToan = @IdThanhToan);
+			  PRINT N'Đã xóa PhieuDatPhong thành công.';
+	UPDATE ThanhToan
+	SET idPhieuDatPhong = NULL
+	WHERE IdThanhToan = @IdThanhToan;
+
+	
+    END
+    ELSE
+    BEGIN
+        PRINT N'Không tồn tại Id thanh toán.';
+    END
+END
+go
+ SET STATISTICS time On;
+ EXEC AddPhieuDatDichVu 
+    @NameDichVu = N'123',  -- Thay thế bằng tên dịch vụ cần chèn
+    @idDichVu = 1,  -- Thay thế bằng ID dịch vụ cần chèn
+    @idPhieuDatPhong = 1,  -- Thay thế bằng ID phiếu đặt phòng
+    @SoLuong = 1;  
+	
+ SET STATISTICS time OFF;
+ EXEC UpdatePhieuDatDichVu
+	@idPhieuDatDichVu = 5,
+    @NameDichVu = N'123',  
+    @idDichVu = 1, 
+    @idPhieuDatPhong = 1, 
+    @SoLuong = 4;  
+
+	go
+
 SET STATISTICS IO On;
 --TEXT PHẦN USER
 EXEC AddUser @Name='121', @Email='11',@Password='1',@Address='12',@City='12',@IdRole=1;
@@ -494,10 +730,10 @@ EXEC GetByIdLoaiPhong 3
 SELECT * FROM LoaiPhong
 
 --TEST PHONG
-EXEC AddPhong N'C11',N'PHÒNG SỐ C10',3,1,2000
+EXEC AddPhong N'C1',N'PHÒNG SỐ c1',1,2000
 EXEC UpdatePhong 4,N'C1',N'PHÒNG SỐ C1',1,1,2000
 EXEC GetAllPhong 1,2
-EXEC DeletePhong 6
+EXEC DeletePhong 5
 EXEC GetbyIdPhong  4
 SELECT * FROM Phong
 SET STATISTICS IO On;
@@ -508,12 +744,37 @@ where LoaiPhong.Name=N'THƯỜNG'
 --- TEST CHO DỊCH VỤ 
 EXEC AddDichVu N'MỰC KHÔsa',2,12223
 EXEC UpdateDichVu 2,N'PESSI',2,2222
-EXEC DeleteDichVu 3
+EXEC DeleteDichVu 5
 EXEC GetByIdDichVu 2
+ 
+
+select * from Phong
+select * from DichVu
+select * from ThanhToan
+select * from PhieuDatDichVu
+select * from PhieuDatPhong
+exec AddPhieuDatPhong  N'Nguyen van bc','92311232',3
 
 
+ EXEC AddPhieuDatDichVu 
+    @NameDichVu = N'1',  -- Thay thế bằng tên dịch vụ cần chèn
+    @idDichVu = 1,  -- Thay thế bằng ID dịch vụ cần chèn
+    @idPhieuDatPhong = 1,  -- Thay thế bằng ID phiếu đặt phòng
+    @SoLuong = 1;  
+	
 SET STATISTICS IO OFF;
 
+go
+-- tesst logic
 
 
+select * from PhieuDatPhong
+select * from thanhtoan
+select * from Phieudatdichvu
+select * from phong
 
+exec AddThanhToan 6,'7/7/2024'
+exec DuyetThanhToan 3
+exec AddPhieuDatPhong  N'Nguyen van b','92312',3,'2024/7/3'
+exec AddPhieuDatDichVu N'Sting',1,6,1,'2024/7/3'
+exec AddPhieuDatDichVu N'Sting',1,2,1,'3/7/2024'

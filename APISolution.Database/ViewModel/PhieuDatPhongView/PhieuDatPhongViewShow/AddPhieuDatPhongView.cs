@@ -12,6 +12,7 @@ namespace APISolution.Database.ViewModel.PhieuDatPhongView.PhieuDatPhongViewShow
         public string TenNguoiDat { get; set; } = string.Empty;
         public string SoDienThoai { get; set; } = string.Empty;
         public int IdPhong { get; set; }
+        public DateTime NgayDatPhong { get; set; }
 
     }
 }

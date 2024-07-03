@@ -1,7 +1,7 @@
 ﻿using APISolution.Database.DatabaseContext;
 using APISolution.Database.Stored_Procedure;
-using APISoluton.Application.Interface.DichVu.Commands;
-using APISoluton.Application.Interface.DichVu.Queries;
+using APISoluton.Application.Interface.IDichVu.Commands;
+using APISoluton.Application.Interface.IDichVu.Queries;
 using APISoluton.Database.ViewModel.DichVuView;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;

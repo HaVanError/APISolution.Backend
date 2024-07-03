@@ -21,6 +21,14 @@ namespace APISolution.Database.Configuration
             builder.HasOne(x => x.LoaiPhongs).WithMany(x=>x.Phong).HasForeignKey(x=>x.IdLoaiPhong).OnDelete(DeleteBehavior.Restrict);
             builder.Property(x => x.StatusPhong).HasDefaultValue(StatusPhong.Empty).IsRequired();
 
+            builder.HasData(
+                new Phong { IdPhong = 1,Describe="Phòng Vip A1",IdLoaiPhong =1,Name="A1",GiaPhong =200000,StatusPhong=StatusPhong.Empty },
+                  new Phong { IdPhong = 2, Describe = "Phòng Vip A2", IdLoaiPhong = 1, Name = "A2", GiaPhong = 200000, StatusPhong = StatusPhong.Empty },
+                    new Phong { IdPhong = 3, Describe = "Phòng Vip A3", IdLoaiPhong = 1, Name = "A3", GiaPhong = 200000, StatusPhong = StatusPhong.Empty },
+                      new Phong { IdPhong = 4, Describe = "Phòng Vip B1", IdLoaiPhong = 2, Name = "B1", GiaPhong = 150000, StatusPhong = StatusPhong.Empty },
+                      new Phong { IdPhong = 5, Describe = "Phòng Vip B2", IdLoaiPhong = 2, Name = "B2", GiaPhong = 150000, StatusPhong = StatusPhong.Empty }
+                );
+
         }
     }
 }

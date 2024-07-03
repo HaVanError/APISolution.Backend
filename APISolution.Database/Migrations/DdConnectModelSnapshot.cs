@@ -45,6 +45,36 @@ namespace APISolution.Database.Migrations
                     b.HasIndex("IdDichVu", "NameDichVu");
 
                     b.ToTable("DichVu", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            IdDichVu = 1,
+                            Gia = 15000f,
+                            NameDichVu = "Sting",
+                            SoLuong = 1000
+                        },
+                        new
+                        {
+                            IdDichVu = 2,
+                            Gia = 15000f,
+                            NameDichVu = "Bò hút",
+                            SoLuong = 1000
+                        },
+                        new
+                        {
+                            IdDichVu = 3,
+                            Gia = 18000f,
+                            NameDichVu = "Bia Sài Gòn",
+                            SoLuong = 1000
+                        },
+                        new
+                        {
+                            IdDichVu = 4,
+                            Gia = 22000f,
+                            NameDichVu = "Thuốc lá Hero",
+                            SoLuong = 1000
+                        });
                 });
 
             modelBuilder.Entity("APISolution.Database.Entity.LoaiPhong", b =>
@@ -69,6 +99,20 @@ namespace APISolution.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("LoaiPhong", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            IdLoaiPhong = 1,
+                            MoTa = "Loại phòng VIP",
+                            Name = "Vip"
+                        },
+                        new
+                        {
+                            IdLoaiPhong = 2,
+                            MoTa = "Loại phòng Thường",
+                            Name = "Thường"
+                        });
                 });
 
             modelBuilder.Entity("APISolution.Database.Entity.PhieuDatPhong", b =>
@@ -79,12 +123,14 @@ namespace APISolution.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPhieuDatPhong"));
 
-                    b.Property<string>("GiaPhong")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<float>("GiaPhong")
+                        .HasColumnType("real");
 
                     b.Property<int>("IdPhong")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("NgayDatPhong")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SoDienThoai")
                         .IsRequired()
@@ -106,7 +152,7 @@ namespace APISolution.Database.Migrations
                     b.HasIndex("IdPhong")
                         .IsUnique();
 
-                    b.HasIndex("TenPhong", "IdPhieuDatPhong", "TenNguoiDat");
+                    b.HasIndex("TenPhong", "TenNguoiDat");
 
                     b.ToTable("PhieuDatPhong", (string)null);
                 });
@@ -128,7 +174,10 @@ namespace APISolution.Database.Migrations
                     b.Property<int>("IdPhieuDatPhong")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdPhong")
+                    b.Property<DateTime>("NgayDatDichVu")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("PhongIdPhong")
                         .HasColumnType("int");
 
                     b.Property<int>("SoLuong")
@@ -155,7 +204,7 @@ namespace APISolution.Database.Migrations
 
                     b.HasIndex("IdPhieuDatPhong");
 
-                    b.HasIndex("IdPhong");
+                    b.HasIndex("PhongIdPhong");
 
                     b.HasIndex("TenDichVu", "IdPhieuDichVu");
 
@@ -196,6 +245,53 @@ namespace APISolution.Database.Migrations
                     b.HasIndex("IdPhong", "Name");
 
                     b.ToTable("Phong", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            IdPhong = 1,
+                            Describe = "Phòng Vip A1",
+                            GiaPhong = 200000f,
+                            IdLoaiPhong = 1,
+                            Name = "A1",
+                            StatusPhong = 0
+                        },
+                        new
+                        {
+                            IdPhong = 2,
+                            Describe = "Phòng Vip A2",
+                            GiaPhong = 200000f,
+                            IdLoaiPhong = 1,
+                            Name = "A2",
+                            StatusPhong = 0
+                        },
+                        new
+                        {
+                            IdPhong = 3,
+                            Describe = "Phòng Vip A3",
+                            GiaPhong = 200000f,
+                            IdLoaiPhong = 1,
+                            Name = "A3",
+                            StatusPhong = 0
+                        },
+                        new
+                        {
+                            IdPhong = 4,
+                            Describe = "Phòng Vip B1",
+                            GiaPhong = 150000f,
+                            IdLoaiPhong = 2,
+                            Name = "B1",
+                            StatusPhong = 0
+                        },
+                        new
+                        {
+                            IdPhong = 5,
+                            Describe = "Phòng Vip B2",
+                            GiaPhong = 150000f,
+                            IdLoaiPhong = 2,
+                            Name = "B2",
+                            StatusPhong = 0
+                        });
                 });
 
             modelBuilder.Entity("APISolution.Database.Entity.ResfreshToken", b =>
@@ -256,6 +352,95 @@ namespace APISolution.Database.Migrations
                     b.HasIndex("IdRole", "NameRole");
 
                     b.ToTable("Quyen", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            IdRole = 1,
+                            MoTa = "Người quản trị hệ thống",
+                            NameRole = "Admin"
+                        },
+                        new
+                        {
+                            IdRole = 2,
+                            MoTa = "Người dùng hệ thống",
+                            NameRole = "User"
+                        });
+                });
+
+            modelBuilder.Entity("APISolution.Database.Entity.ThanhToan", b =>
+                {
+                    b.Property<int>("IdThanhToan")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdThanhToan"));
+
+                    b.Property<DateTime>("NgayThanhToan")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTraPhong")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TenKhachHang")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenPhong")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("TongThanhTien")
+                        .HasColumnType("float");
+
+                    b.Property<int>("TrangThaiThanhToan")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(2);
+
+                    b.Property<int?>("idPhieuDatPhong")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdThanhToan");
+
+                    b.HasIndex("idPhieuDatPhong");
+
+                    b.ToTable("ThanhToan", (string)null);
+                });
+
+            modelBuilder.Entity("APISolution.Database.Entity.ThanhToan_PhieuDatPhong", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdPhieuDatPhong")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdThanhToan")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("NgayDat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTra")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PhieuDatPhongIdPhieuDatPhong")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ThanhToanIdThanhToan")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PhieuDatPhongIdPhieuDatPhong");
+
+                    b.HasIndex("ThanhToanIdThanhToan");
+
+                    b.ToTable("ThanhToan_PhieuDatPhong", (string)null);
                 });
 
             modelBuilder.Entity("APISolution.Database.Entity.User", b =>
@@ -327,17 +512,13 @@ namespace APISolution.Database.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("APISolution.Database.Entity.Phong", "Phong")
+                    b.HasOne("APISolution.Database.Entity.Phong", null)
                         .WithMany("PhieuDichVus")
-                        .HasForeignKey("IdPhong")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("PhongIdPhong");
 
                     b.Navigation("DichVu");
 
                     b.Navigation("PhieuDatPhong");
-
-                    b.Navigation("Phong");
                 });
 
             modelBuilder.Entity("APISolution.Database.Entity.Phong", b =>
@@ -360,6 +541,35 @@ namespace APISolution.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("APISolution.Database.Entity.ThanhToan", b =>
+                {
+                    b.HasOne("APISolution.Database.Entity.PhieuDatPhong", "PhieuDatPhong")
+                        .WithMany("ThanhToans")
+                        .HasForeignKey("idPhieuDatPhong")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("PhieuDatPhong");
+                });
+
+            modelBuilder.Entity("APISolution.Database.Entity.ThanhToan_PhieuDatPhong", b =>
+                {
+                    b.HasOne("APISolution.Database.Entity.PhieuDatPhong", "PhieuDatPhong")
+                        .WithMany()
+                        .HasForeignKey("PhieuDatPhongIdPhieuDatPhong")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APISolution.Database.Entity.ThanhToan", "ThanhToan")
+                        .WithMany()
+                        .HasForeignKey("ThanhToanIdThanhToan")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PhieuDatPhong");
+
+                    b.Navigation("ThanhToan");
                 });
 
             modelBuilder.Entity("APISolution.Database.Entity.User", b =>
@@ -386,6 +596,8 @@ namespace APISolution.Database.Migrations
             modelBuilder.Entity("APISolution.Database.Entity.PhieuDatPhong", b =>
                 {
                     b.Navigation("PhieuDichVus");
+
+                    b.Navigation("ThanhToans");
                 });
 
             modelBuilder.Entity("APISolution.Database.Entity.Phong", b =>

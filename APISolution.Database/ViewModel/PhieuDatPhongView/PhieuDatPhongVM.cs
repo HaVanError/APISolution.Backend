@@ -17,6 +17,7 @@ namespace APISoluton.Database.ViewModel.PhieuDatPhongView
         public string trangthai { get; set; } = string.Empty;
 
         public int IdPhong { get; set; }
+        public string NgayDatPhong {  get; set; }
       
     }
 }
