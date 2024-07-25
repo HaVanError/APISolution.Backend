@@ -5,6 +5,7 @@ using APISoluton.Application.Interface.IPhieuDatDichVu.Commands;
 using APISoluton.Application.Interface.IPhieuDatDichVu.Queries;
 using APISoluton.Application.Service.CacheServices;
 using APISoluton.Database.ViewModel.DichVuView;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,7 @@ namespace APISolution.Backend.Controllers
             _cache = cache;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddPhieuDatDV([FromForm]AddPhieuDatDichVuView model)
         {
             try
@@ -39,6 +41,7 @@ namespace APISolution.Backend.Controllers
             }
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllPhieuDatDV(int pageNumber, int pageSize)
         {
             _key = $"PhieuDatDV_{pageNumber}_{pageSize}";
@@ -57,11 +60,13 @@ namespace APISolution.Backend.Controllers
         }
     
         [HttpGet("getbyallphieudichvu")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetByPhieuDatDV([FromQuery] SearchViewPhieuDatDV model)
         {
             return Ok(await _queriesPhieuDatDichVu.GetByAllPhieuDichVu(model));
         }
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdatePhieuDichVu(int id, AddPhieuDatDichVuView model)
         {
             if (!ModelState.IsValid)
@@ -76,6 +81,7 @@ namespace APISolution.Backend.Controllers
             }
         }
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeletePhieuDichVu(int id)
         {
             if (id == 0)

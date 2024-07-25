@@ -11,6 +11,7 @@ using APISoluton.Database.ViewModel.UserView;
 using APISoluton.Database.ViewModel.UserView.UserViewShow;
 using System.Drawing.Printing;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.AspNetCore.Authorization;
 namespace APISolution.Backend.Controllers
 {
     [Route("api/[controller]")]
@@ -29,8 +30,8 @@ namespace APISolution.Backend.Controllers
             _cache = cache;
         }
         [HttpPost]
-        // [Authorize(Roles = "Admin")]
-      
+        [Authorize(Roles = "Admin")]
+
         public async Task<ActionResult> Add([FromForm] UserVM user)
         {
             try
@@ -56,7 +57,7 @@ namespace APISolution.Backend.Controllers
 
         }
         [HttpGet("{name}")]
-        //   [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<User>> GetUserById(string name)
         {
            
@@ -81,8 +82,7 @@ namespace APISolution.Backend.Controllers
 
         }
         [HttpGet]
-        //   [Authorize(Roles ="Admin")]
-
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserVMShowAll>> GetUser(int pageNumber = 1, int pageSize=5)
         {
             
@@ -102,7 +102,7 @@ namespace APISolution.Backend.Controllers
             }
         }
         [HttpDelete("{id:int}", Name = "DeleteUser")]
-        //  [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteUser(int id)
         {
             if (id == 0) {
@@ -116,7 +116,7 @@ namespace APISolution.Backend.Controllers
             }       
         }
         [HttpPut]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUser(int id, UserVM user)
         {
             if (id == 0)

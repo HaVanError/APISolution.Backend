@@ -5,6 +5,7 @@ using APISoluton.Application.Service.CacheServices;
 using APISoluton.Database.ViewModel.PhongView;
 using APISoluton.Database.ViewModel.PhongView.PhongViewShowClient;
 using APISoluton.Database.ViewModel.UserView.UserViewShow;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,7 @@ namespace APISolution.Backend.Controllers
             _cache = cache;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult>AddPhong(AddPhongView phong)
         {
            
@@ -62,6 +64,7 @@ namespace APISolution.Backend.Controllers
             return Ok(await _queriesPhong.GetPhongById(id));
         }
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeletePhong(int id)
         {
             if(id == 0)
@@ -77,6 +80,7 @@ namespace APISolution.Backend.Controllers
            
         }
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdatePhong(int id,PhongVM model)
         {
             if (!ModelState.IsValid)

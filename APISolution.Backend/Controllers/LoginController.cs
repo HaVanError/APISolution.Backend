@@ -28,6 +28,7 @@ namespace APISolution.Backend.Controllers
         }
         [HttpPost]
         [AllowAnonymous]
+        [AutoValidateAntiforgeryToken]
         public IActionResult Authentication(LoginVM model)
         {
             if (!ModelState.IsValid) { 

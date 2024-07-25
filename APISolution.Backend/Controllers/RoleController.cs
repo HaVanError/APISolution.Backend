@@ -27,7 +27,7 @@ namespace APISolution.Backend.Controllers
             _cache = cache;
         }
         [HttpPost]
-      // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task <IActionResult>Add(RoleVM vn)
         {
             try
@@ -50,7 +50,7 @@ namespace APISolution.Backend.Controllers
             }  
         }
         [HttpGet]
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Role>> Get(int pageNumber ,int pageSize)
         {
              _key = $"Role_{pageNumber}_{pageSize}";
@@ -66,7 +66,7 @@ namespace APISolution.Backend.Controllers
             }
         }
         [HttpPut("{id:int}")]
-      //  [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateRole(int id , RoleVM model)
         {
             if (id == 0)
@@ -81,7 +81,7 @@ namespace APISolution.Backend.Controllers
            
         }
         [HttpDelete]
-      // [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task <IActionResult> DeleteRole(int id)
         {
             if(id ==0)

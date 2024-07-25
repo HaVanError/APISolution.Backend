@@ -6,6 +6,7 @@ using APISoluton.Application.Interface.IPhieuDatPhong.Queries;
 using APISoluton.Application.Service.CacheServices;
 using APISoluton.Database.ViewModel.DichVuView;
 using APISoluton.Database.ViewModel.PhieuDatPhongView;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,7 @@ namespace APISolution.Backend.Controllers
             _cache = cache;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> DatPhong([FromForm] AddPhieuDatPhongView model)
         {
             if (!ModelState.IsValid)
@@ -39,6 +41,7 @@ namespace APISolution.Backend.Controllers
             }
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllPhieuDatPhong(int pageNumber, int pageSize)
         {
             _key = $"PhieuDatPhon_{pageNumber}_{pageSize}";
@@ -56,13 +59,14 @@ namespace APISolution.Backend.Controllers
            
         }
         [HttpGet("getbyall")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetByAllPhieuDatPhong([FromQuery]ViewSeach model)
         {
         
          return Ok(await _queriesPhieuDatPhong.GetByAllPhieuDatPhong(model));
         }
-        [HttpPut("duyetdatphong/{idPhieuDat}")]
- 
+        [HttpPut("duyetdatphong/{idPhieuDat}")]'
+           [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DuyetPhieuDatPhong(int idPhieuDat)
         {
             if(idPhieuDat == 0)
@@ -77,7 +81,7 @@ namespace APISolution.Backend.Controllers
             }
         }
         [HttpPut("traphong/{id:int}")]
-     
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> TraPhong(int id)
         {
             if (id == 0)

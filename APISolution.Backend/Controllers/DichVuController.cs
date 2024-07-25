@@ -3,7 +3,7 @@ using APISoluton.Application.Interface.IDichVu.Commands;
 using APISoluton.Application.Interface.IDichVu.Queries;
 using APISoluton.Application.Service.CacheServices;
 using APISoluton.Database.ViewModel.DichVuView;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
@@ -26,6 +26,7 @@ namespace APISolution.Backend.Controllers
             _cache = cache;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddDichVu(DichVuVM model)
         {
             if (!ModelState.IsValid)
@@ -41,6 +42,7 @@ namespace APISolution.Backend.Controllers
             return StatusCode(StatusCodes.Status201Created, dichvu);
         }
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteDichVu(int id)
         {
             if (id == 0)
@@ -55,6 +57,7 @@ namespace APISolution.Backend.Controllers
             }
         }
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateDichVu(int id, DichVuVM model)
         {
             if (!ModelState.IsValid)

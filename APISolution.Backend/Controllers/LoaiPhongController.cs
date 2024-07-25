@@ -3,6 +3,7 @@ using APISoluton.Application.Interface.ILoaiPhong.Commands;
 using APISoluton.Application.Interface.ILoaiPhong.Queries;
 using APISoluton.Application.Service.CacheServices;
 using APISoluton.Database.ViewModel.LoaiPhongView;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +24,7 @@ namespace APISolution.Backend.Controllers
             _cacheServices = cacheServices;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<LoaiPhongVM>> AddLoai(LoaiPhongVM loaiPhong) {
 
             if (!ModelState.IsValid)
@@ -51,10 +53,9 @@ namespace APISolution.Backend.Controllers
             {
                 return cache;
             }
-           
-
         }
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<LoaiPhongVM>> RemoveLoaiPhong( int id)
         {
             if(id == 0)
@@ -69,6 +70,7 @@ namespace APISolution.Backend.Controllers
             }
         }
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<LoaiPhongVM>> UpdateLoaiPhong(int id,LoaiPhongVM model)
         {
             if (id == 0)

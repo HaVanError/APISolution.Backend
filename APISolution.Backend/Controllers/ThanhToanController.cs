@@ -4,6 +4,7 @@ using APISoluton.Application.Interface.IThanhToan.Commands;
 using APISoluton.Application.Interface.IThanhToan.Queries;
 using APISoluton.Application.Service.CacheServices;
 using APISoluton.Database.ViewModel.PhongView.PhongViewShowClient;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,7 @@ namespace APISolution.Backend.Controllers
            _cache = cache;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin , User")]
         public async Task< IActionResult> add(ThanhToanAddVM moden)
         {
             if (moden == null) {
@@ -33,6 +35,7 @@ namespace APISolution.Backend.Controllers
             return Ok(await _commandThanhToan.ThanhToan(moden));
         }
           [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DuyetThanhToan(int id)
         {
             if (id == 0)
@@ -45,6 +48,7 @@ namespace APISolution.Backend.Controllers
             return NoContent();
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllThanhToan(int pageNumber , int pageSize)
         {
              _key = $"ThanhToan_{pageNumber}_{pageSize}";
