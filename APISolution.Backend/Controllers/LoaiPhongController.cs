@@ -15,6 +15,7 @@ namespace APISolution.Backend.Controllers
         private readonly ILoaiPhongCommand _loaiPhongCommand;
         private readonly ILoaiPhongQueries _loaiPhongQueries;
         private readonly CacheServices _cacheServices;
+        static string key = "LoaiPhong";
         public LoaiPhongController(ILoaiPhongCommand loaiPhongCommand, ILoaiPhongQueries loaiPhongQueries,CacheServices cacheServices )
         {
             _loaiPhongCommand = loaiPhongCommand;
@@ -31,6 +32,7 @@ namespace APISolution.Backend.Controllers
             else
             {
                 await _loaiPhongCommand.AddLoaiPhong(loaiPhong);
+                _cacheServices.Remove(key);
                 return Created();
             }
         }
@@ -42,6 +44,7 @@ namespace APISolution.Backend.Controllers
             if(cacherbase == null)
             {
                  var dsLoai = await _loaiPhongQueries.GetAllLoaiPhong();
+                _cacheServices.Set(key, dsLoai,TimeSpan.FromMinutes(30));
                 return Ok(dsLoai);
             }
             else
@@ -62,6 +65,7 @@ namespace APISolution.Backend.Controllers
             else
             {
                 await _loaiPhongCommand.RemovePhong(id);
+                _cacheServices.Remove(key);
                 return NoContent();
             }
           
@@ -77,6 +81,7 @@ namespace APISolution.Backend.Controllers
             else
             {
                 await _loaiPhongCommand.UpdateLoaiPhong(model,id);
+                _cacheServices.Remove(key);
                 return NoContent();
             }
 

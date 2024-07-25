@@ -1,6 +1,7 @@
 ﻿using APISolution.Database.Entity;
 using APISoluton.Application.Interface.IDichVu.Commands;
 using APISoluton.Application.Interface.IDichVu.Queries;
+using APISoluton.Application.Service.CacheServices;
 using APISoluton.Database.ViewModel.DichVuView;
 
 using Microsoft.AspNetCore.Http;
@@ -16,8 +17,9 @@ namespace APISolution.Backend.Controllers
     {
         private readonly IDichVuCommand _dichVuCommand;
         private readonly IDichVuQueries _dichVuQueries;
-        private readonly IMemoryCache _cache;
-        public DichVuController(IDichVuCommand dichVuCommand, IDichVuQueries dichVuQueries, IMemoryCache cache)
+        private readonly CacheServices _cache;
+        static string key = "DichVu";
+        public DichVuController(IDichVuCommand dichVuCommand, IDichVuQueries dichVuQueries, CacheServices cache)
         {
             _dichVuCommand = dichVuCommand;
             _dichVuQueries = dichVuQueries;
@@ -37,6 +39,7 @@ namespace APISolution.Backend.Controllers
                 return BadRequest(ModelState);
             }
             var dichvu = await _dichVuCommand.AddDichVu(model);
+            _cache.Remove(key);
             return StatusCode(StatusCodes.Status201Created, dichvu);
 
         }
@@ -52,6 +55,7 @@ namespace APISolution.Backend.Controllers
             else
             {
                 await _dichVuCommand.DeleteDichVu(id);
+                _cache.Remove(key);
                 return NoContent();
             }
         }
@@ -69,6 +73,7 @@ namespace APISolution.Backend.Controllers
             else
             {
                 await _dichVuCommand.UpdateDichVu(model, id);
+                _cache.Remove(key);
                 return NoContent();
             }
 
@@ -95,10 +100,11 @@ namespace APISolution.Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<List<DichVuVM>>> GetAllDichVu(int pageNumber,int pageSize)
         {
-            var key = $"dichVu_{pageNumber}_{pageSize}";
+            key = $"DichVu_{pageNumber}_{pageSize}";
             var baseDichVu = _cache.Get<List<DichVuVM>>(key);
             if (baseDichVu == null) {
                 var listDichVu=await    _dichVuQueries.GetAllDichVu(pageNumber, pageSize);
+                _cache.Set(key, listDichVu,TimeSpan.FromMinutes(30));
                 return Ok(listDichVu);
             }
             else
