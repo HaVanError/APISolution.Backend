@@ -15,7 +15,7 @@ namespace APISolution.Backend.Controllers
         private readonly ILoaiPhongCommand _loaiPhongCommand;
         private readonly ILoaiPhongQueries _loaiPhongQueries;
         private readonly CacheServices _cacheServices;
-        static string key = "LoaiPhong";
+        static string _key = "LoaiPhong";
         public LoaiPhongController(ILoaiPhongCommand loaiPhongCommand, ILoaiPhongQueries loaiPhongQueries,CacheServices cacheServices )
         {
             _loaiPhongCommand = loaiPhongCommand;
@@ -32,24 +32,24 @@ namespace APISolution.Backend.Controllers
             else
             {
                 await _loaiPhongCommand.AddLoaiPhong(loaiPhong);
-                _cacheServices.Remove(key);
+                _cacheServices.Remove(_key);
                 return Created();
             }
         }
         [HttpGet]
         public async Task<ActionResult<List<LoaiPhongVM>>> GetLoaiPhongs()
         {
-            var key = "loai";
-            var cacherbase = _cacheServices.Get<List<LoaiPhongVM>>(key);
-            if(cacherbase == null)
+             _key = "loai";
+            var cache = _cacheServices.Get<List<LoaiPhongVM>>(_key);
+            if(cache == null)
             {
                  var dsLoai = await _loaiPhongQueries.GetAllLoaiPhong();
-                _cacheServices.Set(key, dsLoai,TimeSpan.FromMinutes(30));
+                _cacheServices.Set(_key, dsLoai,TimeSpan.FromMinutes(30));
                 return Ok(dsLoai);
             }
             else
             {
-                return cacherbase;
+                return cache;
             }
            
 
@@ -57,7 +57,6 @@ namespace APISolution.Backend.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<LoaiPhongVM>> RemoveLoaiPhong( int id)
         {
-           
             if(id == 0)
             {
                 return BadRequest();
@@ -65,15 +64,13 @@ namespace APISolution.Backend.Controllers
             else
             {
                 await _loaiPhongCommand.RemovePhong(id);
-                _cacheServices.Remove(key);
+                _cacheServices.Remove(_key);
                 return NoContent();
             }
-          
         }
         [HttpPut("{id:int}")]
         public async Task<ActionResult<LoaiPhongVM>> UpdateLoaiPhong(int id,LoaiPhongVM model)
         {
-
             if (id == 0)
             {
                 return BadRequest();
@@ -81,10 +78,9 @@ namespace APISolution.Backend.Controllers
             else
             {
                 await _loaiPhongCommand.UpdateLoaiPhong(model,id);
-                _cacheServices.Remove(key);
+                _cacheServices.Remove(_key);
                 return NoContent();
             }
-
         }
 
     }

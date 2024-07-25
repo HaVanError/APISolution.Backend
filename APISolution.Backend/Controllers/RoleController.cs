@@ -16,14 +16,14 @@ namespace APISolution.Backend.Controllers
     [ApiController]
     public class RoleController : ControllerBase
     {
-        private readonly IRoleCommand _role;
-        private readonly IRolesQueries _roles;
-        private readonly static string key = "Role";
+        private readonly IRoleCommand _commandRole;
+        private readonly IRolesQueries _queriesRole;
+        private  static string _key = "Role";
         private readonly CacheServices _cache;
         public RoleController(IRoleCommand role, IRolesQueries roles, CacheServices cache)
         {
-            _role = role;
-            _roles = roles;
+            _commandRole = role;
+            _queriesRole = roles;
             _cache = cache;
         }
         [HttpPost]
@@ -40,34 +40,30 @@ namespace APISolution.Backend.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                var addUser = await _role.Add(vn);
+                var addUser = await _commandRole.Add(vn);
+                _cache.Remove(_key);
                 return StatusCode(StatusCodes.Status201Created, vn);
-
             }
             catch (Exception ex)
             {
-
                 return StatusCode(StatusCodes.Status500InternalServerError, vn);
-            }
-          
+            }  
         }
         [HttpGet]
        // [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Role>> Get(int pageNumber ,int pageSize)
         {
-            string keyss = $"role_{pageNumber}_{pageSize}";
-            var exit = _cache.GetList<RoleVM>(keyss);
-
-            if (exit == null)
+             _key = $"Role_{pageNumber}_{pageSize}";
+            var cache = _cache.GetList<RoleVM>(_key);
+            if (cache == null)
             {
-                var listRole = await _roles.GetAllRoless(pageNumber, pageSize);
+                var listRole = await _queriesRole.GetAllRoless(pageNumber, pageSize);
                 return Ok(listRole);
             }
             else
             {
-                return Ok(exit);
+                return Ok(cache);
             }
-
         }
         [HttpPut("{id:int}")]
       //  [Authorize(Roles = "Admin")]
@@ -78,7 +74,8 @@ namespace APISolution.Backend.Controllers
                 return BadRequest();
             }
             else {
-                await _role.Update(model, id);
+                await _commandRole.Update(model, id);
+                _cache.Remove(_key);
                 return NoContent();
             }
            
@@ -91,7 +88,8 @@ namespace APISolution.Backend.Controllers
             {
                 return BadRequest();
             }
-            await _role.Delete(id);
+            await _commandRole.Delete(id);
+            _cache.Remove(_key);
             return NoContent();
         }
     }

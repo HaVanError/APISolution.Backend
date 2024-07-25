@@ -14,13 +14,14 @@ namespace APISolution.Backend.Controllers
     [ApiController]
     public class PhongController : ControllerBase
     {
-        private readonly IPhongCommand _phongCommand;
-        private readonly IPhongQueries _phongQueries;
+        private readonly IPhongCommand _commandPhong;
+        private readonly IPhongQueries _queriesPhong;
         private readonly CacheServices _cache;
+        private static string _key = "Phong";
         public PhongController(IPhongCommand phongCommand, IPhongQueries phongQueries,CacheServices cache)
         {
-            _phongCommand = phongCommand;
-            _phongQueries = phongQueries;
+            _commandPhong = phongCommand;
+            _queriesPhong = phongQueries;
             _cache = cache;
         }
         [HttpPost]
@@ -32,7 +33,8 @@ namespace APISolution.Backend.Controllers
             }
             else
             {
-             var phongs =  await _phongCommand.AddPhong(phong);
+             var phongs =  await _commandPhong.AddPhong(phong);
+                _cache.Remove(_key);
                 return Ok(phongs);
             }
           
@@ -40,24 +42,24 @@ namespace APISolution.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPhong(int pageNumber, int pageSize)
         {
-            string keyss = $"ListPhong_{pageNumber}_{pageSize}";
-            var exit = _cache.GetList<PhongVMShow>(keyss);
-            if (exit == null)
+          _key = $"Phong_{pageNumber}_{pageSize}";
+            var cache = _cache.GetList<PhongVMShow>(_key);
+            if (cache == null)
             {
-                var listPhong = await _phongQueries.GetAllPhong(pageNumber, pageSize);
+                var listPhong = await _queriesPhong.GetAllPhong(pageNumber, pageSize);
 
                 return Ok(listPhong);
             }
             else
             {
-                return Ok(exit);
+                return Ok(cache);
             }
            
         }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetAllPhongById(int id)
         {
-            return Ok(await _phongQueries.GetPhongById(id));
+            return Ok(await _queriesPhong.GetPhongById(id));
         }
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeletePhong(int id)
@@ -68,7 +70,8 @@ namespace APISolution.Backend.Controllers
             }
             else
             {
-                await _phongCommand.RemovePhong(id);
+                await _commandPhong.RemovePhong(id);
+                _cache.Remove(_key);
                 return NoContent();
             }
            
@@ -86,7 +89,8 @@ namespace APISolution.Backend.Controllers
             }
             else
             {
-              await  _phongCommand.UpdatePhong(model,id);
+              await _commandPhong.UpdatePhong(model,id);
+                _cache.Remove(_key);
                 return NoContent();
             }
         }

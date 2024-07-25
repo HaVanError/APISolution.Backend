@@ -20,14 +20,11 @@ namespace APISoluton.Application.Service.PhieuDatDichVuServices
     {
         private readonly DdConnect _db;
         private readonly IMapper _mapper;
-       static string _keyPhieuDatDV = "phieuDatDV";
-        private readonly CacheServices.CacheServices _cacheServices;
         private readonly ProcedurePhieuDatDichVu _procedure;
-        public PhieuDatDichVuService(DdConnect db, IMapper mapper, CacheServices.CacheServices cacheServices,ProcedurePhieuDatDichVu procedure)
+        public PhieuDatDichVuService(DdConnect db, IMapper mapper,ProcedurePhieuDatDichVu procedure)
         {
             _db = db;
             _mapper = mapper;
-            _cacheServices = cacheServices;
             _procedure = procedure;
         }
 
@@ -65,7 +62,6 @@ namespace APISoluton.Application.Service.PhieuDatDichVuServices
             //   return null;
             #endregion
            var dichvu= await _procedure.AddPhieuDatDichVuProcedure(model);
-            _cacheServices.Remove(_keyPhieuDatDV);
             return dichvu;
         }
 
@@ -78,7 +74,7 @@ namespace APISoluton.Application.Service.PhieuDatDichVuServices
             else
             {
                 await _procedure.UpdatePhieuDatDichVuProcedure(id, model);
-                _cacheServices.Remove(_keyPhieuDatDV);
+            
             }
         }
 
@@ -88,7 +84,7 @@ namespace APISoluton.Application.Service.PhieuDatDichVuServices
             if (check != null)
             {
                 await _procedure.DeletePhieuDatDichVuProcedure(id);
-                _cacheServices.Remove(_keyPhieuDatDV);
+           
             }
         }
 
@@ -112,7 +108,7 @@ namespace APISoluton.Application.Service.PhieuDatDichVuServices
                              NgayDatDichVu = PhieuDichVu.NgayDatDichVu.ToString("dd/MM/yyyy",CultureInfo.InvariantCulture)
                          }
                          ).Skip((pageNumber-1)*pageSize).Take(pageSize).ToList();
-            _cacheServices.SetList(_keyPhieuDatDV, query.ToList(), TimeSpan.FromMinutes(30));
+        
             return  query;
         }
 
@@ -128,7 +124,7 @@ namespace APISoluton.Application.Service.PhieuDatDichVuServices
             {
                 query = query.Where(p => p.TenKhachHang.Contains(model.TenNguoiDat));
             }
-            _cacheServices.Remove(_keyPhieuDatDV);
+         
             return  await query.ToListAsync();
         }
     }

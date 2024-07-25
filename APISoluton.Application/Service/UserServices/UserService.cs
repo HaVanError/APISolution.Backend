@@ -20,21 +20,18 @@ namespace APISoluton.Application.Service.UserServices
     {
         private readonly IMapper _mapper;
         private readonly DdConnect _db;
-       static string _keyUser = "user";
-        private readonly CacheServices.CacheServices _cacheServices;
         private readonly ProcedureUser _procedure;
-        public UserService(IMapper mapper, DdConnect db , CacheServices.CacheServices cacheServices, ProcedureUser procedure) 
+        public UserService(IMapper mapper, DdConnect db , ProcedureUser procedure) 
         {
             _mapper = mapper;
             _db = db;
-            _cacheServices = cacheServices;
+          
             _procedure = procedure;
         }
         public async Task<UserVM> CreatUser(UserVM userVM)
         {
             var map = _mapper.Map<User>(userVM);
             await _procedure.CreatUserStored(userVM);
-            _cacheServices.Remove(_keyUser);
             return userVM;
         }
         public async Task DeleteUser(int id)
@@ -43,14 +40,10 @@ namespace APISoluton.Application.Service.UserServices
             if (checkUser != null)
             {
                 await _procedure.DeleteUserAsync(id);
-                _cacheServices.Remove(_keyUser);
             }
         }
         public async Task<List<UserVMShowAll>> GetListUsers(int pageNumber, int pageSize)
         {
-
-            //  cacheKey += $"_{pageNumber}_{pageSize}";
-            _keyUser = $"user_{pageNumber}_{pageSize}";
             var list= await _procedure.GetAllUsers( pageNumber,  pageSize);
             var query = (from User in list.ToList()
                         join Role in _db.Roles on User.IdRole equals Role.IdRole
@@ -63,13 +56,11 @@ namespace APISoluton.Application.Service.UserServices
                             Password = User.Password,
                             Role = Role.NameRole,
                         }).ToList();
-            _cacheServices.SetList(_keyUser, query,TimeSpan.FromMinutes(30));
             return query;
         }
         public async Task<User> GetUserByName(string name)
         {
             var resul = await _procedure.GetUserStoredByName(name);
-            _cacheServices.Remove(_keyUser);
             return resul.FirstOrDefault();
         }
         public async Task<int> UpdateUser(int id, UserVM userVM)
@@ -80,7 +71,6 @@ namespace APISoluton.Application.Service.UserServices
             {
                 await _procedure.UpdateUserStored(id, userVM);
                 var map = _mapper.Map<User>(userVM);
-                _cacheServices.Remove(_keyUser);
                 return id;
             }
             return 0;

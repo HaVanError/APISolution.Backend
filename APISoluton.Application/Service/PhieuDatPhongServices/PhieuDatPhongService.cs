@@ -23,15 +23,10 @@ namespace APISoluton.Application.Service.PhieuDatPhongServices
     public class PhieuDatPhongService : IPhieuDatPhongCommand,IPhieuDatPhongQueries
     {
         private readonly DdConnect _db;
-      //  private readonly IMapper _mapper;
-        static string _keyPhieuDatPhong = "phieuDatPhong";
-        private readonly CacheServices.CacheServices _cacheServices;
         private readonly ProcedurePhieuDatPhong _procedure;
-        public PhieuDatPhongService(DdConnect db/*, IMapper mapper*/, CacheServices.CacheServices cacheServices,ProcedurePhieuDatPhong procedurePhieuDatPhong)
+        public PhieuDatPhongService(DdConnect db ,ProcedurePhieuDatPhong procedurePhieuDatPhong)
         {
             _db = db;
-         //   _mapper = mapper;
-            _cacheServices = cacheServices;
             _procedure = procedurePhieuDatPhong;
         }
         public async Task<AddPhieuDatPhongView> DatPhong(AddPhieuDatPhongView mode)
@@ -49,7 +44,7 @@ namespace APISoluton.Application.Service.PhieuDatPhongServices
                 _db.Entry(phong).State = EntityState.Modified;
                 _db.Entry(check).State = EntityState.Modified;
                 _db.SaveChanges();
-                _cacheServices.Remove(_keyPhieuDatPhong);
+              
             }
         }
         public async Task<List<PhieuDatPhongVM>> GetAllPhieuDatPhong(int pageNumber, int pageSize)
@@ -69,7 +64,7 @@ namespace APISoluton.Application.Service.PhieuDatPhongServices
                              NgayDatPhong = PhieuDatPhong.NgayDatPhong.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
 
                          }).Skip((pageNumber-1)*pageSize).Take(pageSize);
-            _cacheServices.SetList(_keyPhieuDatPhong, query.ToList(),TimeSpan.FromMinutes(30));
+           
             return await  query.ToListAsync();
         }
         public async Task<List<PhieuDatPhong>> GetByAllPhieuDatPhong(ViewSeach model)
@@ -90,7 +85,7 @@ namespace APISoluton.Application.Service.PhieuDatPhongServices
             {
                 query = query.Where(p => p.TenPhong.Contains(model.tenPhong));
             }
-            _cacheServices.Remove(_keyPhieuDatPhong);
+          
             return await query.ToListAsync();
         }
 
@@ -106,7 +101,7 @@ namespace APISoluton.Application.Service.PhieuDatPhongServices
               //  _db.Entry(check).State = EntityState.Modified;
               _db.PhieuDatPhongs.Remove(check);
                 _db.SaveChanges();
-                _cacheServices.Remove(_keyPhieuDatPhong);
+              
             }
         }
     }

@@ -22,25 +22,23 @@ namespace APISoluton.Application.Service.PhongServices
         private readonly DdConnect _db;
         private readonly IMapper _mapper;
         private readonly ProcedurePhong _procedurePhong;
-        private readonly CacheServices.CacheServices _cacheServices;
-        static string _keyPhong = "phong";
-        public PhongService(DdConnect db,IMapper mapper,ProcedurePhong procedurePhong ,CacheServices.CacheServices cacheServices)
+
+
+        public PhongService(DdConnect db,IMapper mapper,ProcedurePhong procedurePhong)
         {
             _db = db;
             _mapper = mapper;
             _procedurePhong = procedurePhong;
-            _cacheServices = cacheServices;
         }
         public async Task<AddPhongView> AddPhong(AddPhongView model)
         { 
                 var phong = await _procedurePhong.CreatPhongStored(model);
-                 _cacheServices.Remove(_keyPhong);
                 return phong;
             
         }
         public  async Task<List<PhongVMShow>> GetAllPhong(int pageNumber,int pageSize)
         {
-             _keyPhong = $"phong_{pageNumber}_{pageSize}";
+           
             var query = (from Phong in _db.Phongs
                          join LoaiPhong in _db.Loais on Phong.IdLoaiPhong equals LoaiPhong.IdLoaiPhong
                          where LoaiPhong.IdLoaiPhong == LoaiPhong.IdLoaiPhong
@@ -52,7 +50,6 @@ namespace APISoluton.Application.Service.PhongServices
                              LoaiPhong = LoaiPhong.Name,
                              StatusPhong = Phong.StatusPhong.ToString(),
                          }).AsNoTracking().Skip((pageNumber-1)*pageNumber).Take(pageSize).ToList();
-            _cacheServices.SetList(_keyPhong, query.ToList(), TimeSpan.FromMinutes(30));
             return   query;
         }
 
@@ -63,7 +60,6 @@ namespace APISoluton.Application.Service.PhongServices
             {
              var phong =     await _procedurePhong.GetByIdPhong(id);
              var map = _mapper.Map<PhongVM>(phong);
-                _cacheServices.Remove(_keyPhong);
                 return map;
             }
             return null;
@@ -75,7 +71,6 @@ namespace APISoluton.Application.Service.PhongServices
             if (check != null)
             {
                await  _procedurePhong.DeletePhong(id);
-                _cacheServices.Remove(_keyPhong);
             }
         }
         public async Task UpdatePhong(PhongVM model, int id)
@@ -84,7 +79,6 @@ namespace APISoluton.Application.Service.PhongServices
             if (check != null)
             {
               await _procedurePhong.UpdatePhongStored(id, model);
-                _cacheServices.Remove(_keyPhong);
             }
 
         }

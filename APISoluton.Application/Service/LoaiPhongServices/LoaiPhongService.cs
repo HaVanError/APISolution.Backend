@@ -18,14 +18,11 @@ namespace APISoluton.Application.Service.LoaiPhongServices
     {
         private readonly DdConnect _db;
         private readonly IMapper _mapper;
-        static string _keyLoai = "loai";
-        private readonly CacheServices.CacheServices _cacheServices;
         private readonly ProcedureLoaiPhong _procedureLoaiPhong;
-        public LoaiPhongService(DdConnect db,IMapper mapper, CacheServices.CacheServices cacheServices , ProcedureLoaiPhong procedureLoaiPhong)
+        public LoaiPhongService(DdConnect db,IMapper mapper, ProcedureLoaiPhong procedureLoaiPhong)
         {
             _db = db;
             _mapper = mapper;
-            _cacheServices = cacheServices;
             _procedureLoaiPhong = procedureLoaiPhong;
         }
         public async Task<LoaiPhongVM> AddLoaiPhong(LoaiPhongVM model)
@@ -39,7 +36,6 @@ namespace APISoluton.Application.Service.LoaiPhongServices
             else
             {
                await _procedureLoaiPhong.CreatLoaiPhongStored(model);
-                _cacheServices.Remove(_keyLoai);
                 return model;
             }
         }
@@ -49,7 +45,6 @@ namespace APISoluton.Application.Service.LoaiPhongServices
          
             var list =  await _db.Loais.ToListAsync();
             var resul = list.Select(x => new LoaiPhongVM { Name = x.Name, MoTa = x.MoTa });
-            _cacheServices.SetList(_keyLoai, resul.ToList(),TimeSpan.FromMinutes(30));
             return  resul.ToList();
         }
 
@@ -60,7 +55,6 @@ namespace APISoluton.Application.Service.LoaiPhongServices
             {
                 var loai = await _procedureLoaiPhong.GetByIdLoaiPhong(id);
                 var map = _mapper.Map<LoaiPhongVM>(loai);
-                _cacheServices.Remove(_keyLoai);
                 return map;
       
             }
@@ -73,7 +67,6 @@ namespace APISoluton.Application.Service.LoaiPhongServices
             if(check != null)
             {
                 await _procedureLoaiPhong.DeleteLoaiPhong(id);
-                _cacheServices.Remove(_keyLoai);
             }
             
         }
@@ -84,7 +77,6 @@ namespace APISoluton.Application.Service.LoaiPhongServices
             if (check != null)
             {
                 await _procedureLoaiPhong.UpdateLoaiPhongStored(id, model);
-                _cacheServices.Remove(_keyLoai);
             }
 
         }

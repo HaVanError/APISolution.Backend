@@ -1,7 +1,10 @@
 ﻿using APISolution.Database.ViewModel;
 using APISolution.Database.ViewModel.PhieuDatDichVuView.PhieuDatDichVuViewShow;
+using APISoluton.Application.Interface.IDichVu.Queries;
 using APISoluton.Application.Interface.IPhieuDatDichVu.Commands;
 using APISoluton.Application.Interface.IPhieuDatDichVu.Queries;
+using APISoluton.Application.Service.CacheServices;
+using APISoluton.Database.ViewModel.DichVuView;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,19 +14,23 @@ namespace APISolution.Backend.Controllers
     [ApiController]
     public class PhieuDatDichVuController : ControllerBase
     {
-        private readonly IPhieuDatDichVuCommand _command;
-        private readonly IPhieuDatDichVuQueries _queries;
-        public PhieuDatDichVuController(IPhieuDatDichVuCommand command, IPhieuDatDichVuQueries queries)
+        private readonly IPhieuDatDichVuCommand _commandPhieuDatDichVu;
+        private readonly IPhieuDatDichVuQueries _queriesPhieuDatDichVu;
+        private readonly CacheServices _cache;
+        private static string _key= "PhieuDatDV";
+        public PhieuDatDichVuController(IPhieuDatDichVuCommand command, IPhieuDatDichVuQueries queries, CacheServices cache)
         {
-            _command = command;
-            _queries = queries;
+            _commandPhieuDatDichVu = command;
+            _queriesPhieuDatDichVu = queries;
+            _cache = cache;
         }
         [HttpPost]
         public async Task<IActionResult> AddPhieuDatDV([FromForm]AddPhieuDatDichVuView model)
         {
             try
             {
-              var ds=  await _command.AddPhieuDatDichVu(model);
+              var ds=  await _commandPhieuDatDichVu.AddPhieuDatDichVu(model);
+                _cache.Remove(_key);
                 return Ok( ds);
             }
             catch (Exception ex)
@@ -34,13 +41,25 @@ namespace APISolution.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPhieuDatDV(int pageNumber, int pageSize)
         {
-           return Ok(_queries.GetAllPhieuDichVu(pageNumber, pageSize));
+            _key = $"PhieuDatDV_{pageNumber}_{pageSize}";
+            var cache = _cache.Get<List<DichVuVM>>(_key);
+            if (cache == null)
+            {
+                var listPhieuDatDV = await _queriesPhieuDatDichVu.GetAllPhieuDichVu(pageNumber, pageSize);
+                _cache.Set(_key, listPhieuDatDV, TimeSpan.FromMinutes(30));
+                return Ok(listPhieuDatDV);
+            }
+            else
+            {
+                return Ok(cache);
+            }
+          
         }
     
         [HttpGet("getbyallphieudichvu")]
         public async Task<IActionResult> GetByPhieuDatDV([FromQuery] SearchViewPhieuDatDV model)
         {
-            return Ok(await _queries.GetByAllPhieuDichVu(model));
+            return Ok(await _queriesPhieuDatDichVu.GetByAllPhieuDichVu(model));
         }
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdatePhieuDichVu(int id, AddPhieuDatDichVuView model)
@@ -51,7 +70,8 @@ namespace APISolution.Backend.Controllers
             }
             else
             {
-                await _command.UpdatePhieuDatDichVu(id, model);
+                await _commandPhieuDatDichVu.UpdatePhieuDatDichVu(id, model);
+                _cache.Remove(_key);
                 return NoContent();
             }
         }
@@ -64,8 +84,9 @@ namespace APISolution.Backend.Controllers
             }
             else
             {
-                await _command.DeletePhieuDatDichVu(id);
-                return Ok();
+                await _commandPhieuDatDichVu.DeletePhieuDatDichVu(id);
+                _cache.Remove(_key);
+                return NoContent();
             }
           
     }

@@ -22,20 +22,18 @@ namespace APISoluton.Application.Service.ThanhToanServices
         private readonly IMapper _mapper;
         private readonly DdConnect _db;
         private readonly ProcedureThanhToan _procedure;
-        static string _key = "thanhToan";
-        private readonly CacheServices.CacheServices _cacheServices;
-        public ThanhToanService(IMapper mapper, DdConnect db,ProcedureThanhToan procedure,CacheServices.CacheServices cacheServices)
+        public ThanhToanService(IMapper mapper, DdConnect db,ProcedureThanhToan procedure)
         {
             _mapper = mapper;
             _db = db;
             _procedure = procedure;
-            _cacheServices = cacheServices;
+           
         }
 
         public async Task DuyetThanhToan(int idThanhToan)
         {
             await _procedure.DuyetThanhToanStored(idThanhToan);
-            _cacheServices.Remove(_key);
+            
         }
 
         public async Task<List<ThanhToanVM>> GetListThanhToan(int pageNumber, int pageSize)
@@ -49,8 +47,6 @@ namespace APISoluton.Application.Service.ThanhToanServices
                 TongThanhTien = x.TongThanhTien ,
                 TrangThaiThanhToan = x.TrangThaiThanhToan.ToString()
             }).Skip((pageNumber-1)*pageSize).Take(pageSize).ToList();
-            _key= $"thanhToan_{pageNumber}_{pageSize}";
-            _cacheServices.SetList(_key, query.ToList(), TimeSpan.FromMinutes(30));
             return  query.ToList();
         }
 
@@ -69,7 +65,6 @@ namespace APISoluton.Application.Service.ThanhToanServices
                              TongThanhTien = thanhtienDv + ThanhToan_PhieuDatPhong.PhieuDatPhong.GiaPhong,
                              TrangThaiThanhToan = ThanhToan.TrangThaiThanhToan.ToString()
                          }).Where(x => x.IdPhieuDatPhong == model.idPhieuDatPhong).ToListAsync();
-            _cacheServices.Remove(_key);
             return await query;
         }
     }

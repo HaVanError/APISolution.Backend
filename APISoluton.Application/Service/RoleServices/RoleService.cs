@@ -23,21 +23,17 @@ namespace APISoluton.Application.Service.RoleServices
     {
         private readonly DdConnect _db;
         private readonly ProcedureRole _role;
-        private readonly CacheServices.CacheServices _cache;
-          static string _keyRole = "role";
         private readonly IMapper _mapper;
 
-        public RoleService(DdConnect db ,ProcedureRole role, CacheServices.CacheServices cache,IMapper mapper)
+        public RoleService(DdConnect db ,ProcedureRole role,IMapper mapper)
         {
             _db = db;
             _role=role;
-            _cache = cache;
             _mapper = mapper;
         }
         public async Task<RoleVM> Add(RoleVM vn)
         {
            await _role.CreatRoleStored(vn);
-            _cache.Remove(_keyRole);
             return vn;
         }
 
@@ -48,7 +44,6 @@ namespace APISoluton.Application.Service.RoleServices
             if (check != null)
             {
                 await _role.DeleteRole(id);
-                _cache.Remove(_keyRole);
             }
         }
         public async Task<List<RoleVM>> GetAllRoless(int pagenumber ,int pagesize)
@@ -59,8 +54,6 @@ namespace APISoluton.Application.Service.RoleServices
                 NameRole = x.NameRole,
                 Description = x.MoTa
             }).ToList();
-            _keyRole = $"role_{pagenumber}_{pagesize}";
-            _cache.SetList(_keyRole, query, TimeSpan.FromMinutes(30));
             return query;
         }
         public RoleVM? GetRoleByName(string name)
@@ -68,7 +61,6 @@ namespace APISoluton.Application.Service.RoleServices
             var check = _db.Roles.SingleOrDefault(x => x.NameRole == name);
             if (check != null)
             {
-                _cache.Remove(_keyRole);
                 return new RoleVM
                 {
                     NameRole = check.NameRole,
@@ -87,7 +79,6 @@ namespace APISoluton.Application.Service.RoleServices
             if (check !=null)
             {
                 await _role.UpdateRoleStored(id, vn);
-                _cache.Remove(_keyRole);
                 return vn;
             }
             return null;

@@ -17,15 +17,15 @@ namespace APISolution.Backend.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserCommaind _user;
-        private readonly IUsersQueries _users;
+        private readonly IUserCommaind _commandUser;
+        private readonly IUsersQueries _queriesUser;
         private readonly CacheServices _cache; // DI MemoryCache Vào Class
-        private readonly static string key = "User";
+        private  static string _key = "User";
             
         public UserController(IUserCommaind user, IUsersQueries users, CacheServices cache) {
 
-            _user = user;
-            _users = users;
+            _commandUser = user;
+            _queriesUser = users;
             _cache = cache;
         }
         [HttpPost]
@@ -44,7 +44,8 @@ namespace APISolution.Backend.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                var addUser =  await _user.CreatUser(user);
+                var addUser =  await _commandUser.CreatUser(user);
+                _cache.Remove(_key);
                 return StatusCode(StatusCodes.Status201Created, user);
 
             }
@@ -59,10 +60,10 @@ namespace APISolution.Backend.Controllers
         public async Task<ActionResult<User>> GetUserById(string name)
         {
            
-            var checkcache = _cache.Get<User>(key);
+            var checkcache = _cache.Get<User>(_key);
             if (checkcache == null)
             {
-                var item = await _users.GetUserByName(name);
+                var item = await _queriesUser.GetUserByName(name);
                 if (item == null)
                 {
                     return NotFound();
@@ -85,19 +86,19 @@ namespace APISolution.Backend.Controllers
         public async Task<ActionResult<UserVMShowAll>> GetUser(int pageNumber = 1, int pageSize=5)
         {
             
-          string  keyss = $"user_{pageNumber}_{pageSize}";
+         _key = $"User_{pageNumber}_{pageSize}";
           
-            var exit = _cache.GetList<UserVMShowAll>(keyss);
+            var cache = _cache.GetList<UserVMShowAll>(_key);
             
-            if (exit == null)
+            if (cache == null)
             {
-                var listUser = await _users.GetListUsers(pageNumber, pageSize);
-
+                var listUser = await _queriesUser.GetListUsers(pageNumber, pageSize);
+                _cache.Set(_key, listUser,TimeSpan.FromMinutes(39));
                 return Ok(listUser);
             }
             else
             {
-                return Ok(exit);
+                return Ok(cache);
             }
         }
         [HttpDelete("{id:int}", Name = "DeleteUser")]
@@ -109,7 +110,8 @@ namespace APISolution.Backend.Controllers
             }
             else
             {
-                await _user.DeleteUser(id);
+                await _commandUser.DeleteUser(id);
+                _cache.Remove(_key);
                 return NoContent();
             }       
         }
@@ -123,8 +125,8 @@ namespace APISolution.Backend.Controllers
             }
             else
             {
-                await _user.UpdateUser(id, user);
-             
+                await _commandUser.UpdateUser(id, user);
+                _cache.Remove(_key);
                 return  NoContent();
             }
         }
